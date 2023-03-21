@@ -1,0 +1,22 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+   
+   @using (Html.BeginForm())
+   {
+      <label for="student_id">Enter student ID:</label>
+      <input type="text" name="student_id" required>
+
+      <label for="report_date">Enter report date:</label>
+      <input type="date" name="report_date" required>
+
+      <button type="submit" name="handler" value="get_gpa_list" asp-page-handler="AccessPackage">Get GPA List</button>
+      <button type="submit" name="handler" value="get_grade_report" asp-page-handler="AccessPackage">Get Grade Report</button>
+
+      <h2>@Html.Raw(@ViewData["result"])</h2>
+   }
+</div>
