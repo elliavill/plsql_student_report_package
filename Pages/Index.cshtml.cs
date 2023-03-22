@@ -24,7 +24,7 @@ namespace Package.Pages
 
         }
 
-        public void OnPostAccessPackage()
+        public void OnPostAccessStudentList()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
@@ -34,21 +34,19 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 // Add output parameter  
-                OracleParameter outputParam = new OracleParameter("p_output", OracleDbType.Varchar2);
-                outputParam.Direction = ParameterDirection.Output;
-                outputParam.Size = 32767;
-                cmd.Parameters.Add(outputParam);
-
-                // Execute the stored procedure  
+                OracleParameter p_output = new OracleParameter("p_output", OracleDbType.Varchar2);
+                p_output.Direction = ParameterDirection.Output;
+                p_output.Size = 32767;
+                cmd.Parameters.Add(p_output);
                 cmd.ExecuteNonQuery();
 
                 // Get the result from the output parameter  
-                string result = outputParam.Value.ToString();
+                string result = p_output.Value.ToString();
                 ViewData["result"] = result;
             }
         }
 
-        public void OnPostAccessGradeReport(string i_student_id)
+        public void OnGetAccessGradeReport(int selectedStudentId)
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
@@ -56,16 +54,23 @@ namespace Package.Pages
                 OracleCommand cmd = con.CreateCommand();
                 cmd.CommandText = "STUDENT_REPORTS.get_student_grade_report";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add("p_student_id", OracleDbType.Int32).Value = i_student_id;
-                cmd.Parameters.Add("p_report_date", OracleDbType.Date);
-                OracleParameter o_output = new OracleParameter("p_output", OracleDbType.Varchar2);
-                o_output.Direction = ParameterDirection.Output;
-                o_output.Size = 32767;
-                cmd.Parameters.Add(o_output);
-            
+
+                OracleParameter i_student_id = new OracleParameter("i_student_id", OracleDbType.Int32);
+                i_student_id.Value = selectedStudentId;
+                cmd.Parameters.Add(i_student_id);
+
+                OracleParameter p_report_date = new OracleParameter("p_report_date", OracleDbType.Date);
+                p_report_date.Value = DateTime.Today;
+                cmd.Parameters.Add(p_report_date);
+
+                OracleParameter p_output = new OracleParameter("p_output", OracleDbType.Varchar2);
+                p_output.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(p_output);
                 cmd.ExecuteNonQuery();
-                string result = cmd.Parameters["p_output"].Value.ToString();
-                ViewData["showGradeReport"] = result;
+
+                // Get the table HTML from the output parameter and store it in a ViewData dictionary
+                string tableHtml = p_output.Value.ToString();
+                ViewData["tableHtml"] = tableHtml;
             }
         }
     }
