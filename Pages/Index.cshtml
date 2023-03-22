@@ -5,18 +5,14 @@
 }
 
 <div class="text-center">
-   
+   <h1 class="display-4">Student Grade Reports</h1>
+   <h3>Aurel Villyani</h3>
    @using (Html.BeginForm())
    {
-      <label for="student_id">Enter student ID:</label>
-      <input type="text" name="student_id" required>
-
-      <label for="report_date">Enter report date:</label>
-      <input type="date" name="report_date" required>
-
       <button type="submit" name="handler" value="get_gpa_list" asp-page-handler="AccessPackage">Get GPA List</button>
-      <button type="submit" name="handler" value="get_grade_report" asp-page-handler="AccessPackage">Get Grade Report</button>
+      <button type="submit" name="handler" value="get_grade_report" asp-page-handler="AccessGradeReport">Get Grade Report</button>
 
       <h2>@Html.Raw(@ViewData["result"])</h2>
+      <h2>@Html.Raw(@ViewData["showGradeReport"])</h2>
    }
 </div>

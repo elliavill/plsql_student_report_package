@@ -24,7 +24,7 @@ namespace Package.Pages
 
         }
 
-        public void OnPostAccessPackage(string studentId)
+        public void OnPostAccessPackage()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
@@ -33,43 +33,40 @@ namespace Package.Pages
                 cmd.CommandText = "STUDENT_REPORTS.get_student_gpa_list";
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                // Add input parameter 
-                OracleParameter studentIdParam = new OracleParameter("p_student_id", OracleDbType.Varchar2);
-                studentIdParam.Direction = ParameterDirection.Input;
-                studentIdParam.Value = "123"; // replace with actual student ID 
-                cmd.Parameters.Add(studentIdParam);
-
-                // Add output parameter 
+                // Add output parameter  
                 OracleParameter outputParam = new OracleParameter("p_output", OracleDbType.Varchar2);
                 outputParam.Direction = ParameterDirection.Output;
                 outputParam.Size = 32767;
                 cmd.Parameters.Add(outputParam);
 
-                // Execute the stored procedure 
+                // Execute the stored procedure  
                 cmd.ExecuteNonQuery();
 
-                // Get the result from the output parameter 
+                // Get the result from the output parameter  
                 string result = outputParam.Value.ToString();
-
-                // Do something with the result, such as display it in a view 
                 ViewData["result"] = result;
             }
         }
 
-        public void OnPostGetGpaList(string student_id)
+        public void OnPostAccessGradeReport(string i_student_id)
         {
-            //string output;
-            //STUDENT_REPORTS.get_student_gpa_list(student_id, out output);
-            //ViewData["result"] = output;
+            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            {
+                con.Open();
+                OracleCommand cmd = con.CreateCommand();
+                cmd.CommandText = "STUDENT_REPORTS.get_student_grade_report";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("p_student_id", OracleDbType.Int32).Value = i_student_id;
+                cmd.Parameters.Add("p_report_date", OracleDbType.Date);
+                OracleParameter o_output = new OracleParameter("p_output", OracleDbType.Varchar2);
+                o_output.Direction = ParameterDirection.Output;
+                o_output.Size = 32767;
+                cmd.Parameters.Add(o_output);
+            
+                cmd.ExecuteNonQuery();
+                string result = cmd.Parameters["p_output"].Value.ToString();
+                ViewData["showGradeReport"] = result;
+            }
         }
-
-        public void OnPostGetGradeReport(string student_id, DateTime report_date)
-        {
-            //string output;
-            //STUDENT_REPORTS.get_student_grade_report(student_id, report_date, out output);
-            //ViewData["result"] = output;
-        }
-
-
     }
 }
