@@ -34,18 +34,20 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                   // Add output parameter  
-                   OracleParameter p_output = new OracleParameter("p_output", OracleDbType.Varchar2);
-                   p_output.Direction = ParameterDirection.Output;
-                   p_output.Size = 32767;
-                   cmd.Parameters.Add(p_output);
-                   cmd.ExecuteNonQuery();
+                    OracleParameter p_output = new OracleParameter();
+                    p_output.OracleDbType = OracleDbType.Varchar2;
+                    p_output.Size = 32767; 
+                    p_output.ParameterName = "p_output";
+                    p_output.Direction = ParameterDirection.Output;
+
+                    cmd.Parameters.Add(p_output);
+                    cmd.ExecuteNonQuery();
                     
-                   // Get the result from the output parameter  
-                   string result = p_output.Value.ToString();
-                   ViewData["showStudentGpaList"] = result;
-                   var get_id = HttpContext.Request.Form["selectedStudentId"];
-                   OnPostAccessGradeReport(get_id);
+                    // Get the result from the output parameter  
+                    string result = p_output.Value.ToString();
+                    ViewData["showStudentGpaList"] = result;
+                    var get_id = HttpContext.Request.Form["selectedStudentId"];
+                    OnPostAccessGradeReport(get_id);
                 } 
                 catch (OracleException ex)
                 {
@@ -68,12 +70,15 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    cmd.Parameters.Add("i_student_id", i_student_id);
-
-                    OracleParameter o_output = new OracleParameter("p_output", OracleDbType.Varchar2);
-                    o_output.Direction = ParameterDirection.Output;
-                    o_output.Size = 32767;
-                    cmd.Parameters.Add(o_output);
+                    cmd.Parameters.Add("i_student_id", OracleDbType.Int32).Value = 123;                    
+                    //cmd.Parameters.Add("i_student_id", i_student_id);
+                  
+                    OracleParameter p_output = new OracleParameter();
+                    p_output.ParameterName = "p_output";
+                    p_output.OracleDbType = OracleDbType.Varchar2;
+                    p_output.Direction = ParameterDirection.Output;
+                    p_output.Size = 32767;
+                    cmd.Parameters.Add(p_output);
 
                     cmd.ExecuteNonQuery();
                     string result = cmd.Parameters["p_output"].Value.ToString();
