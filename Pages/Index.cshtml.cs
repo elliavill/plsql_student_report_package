@@ -32,21 +32,64 @@ namespace Package.Pages
                 OracleCommand cmd = con.CreateCommand();
                 cmd.CommandText = "STUDENT_REPORTS.get_student_gpa_list";
                 cmd.CommandType = CommandType.StoredProcedure;
-
-                // Add output parameter  
-                OracleParameter p_output = new OracleParameter("p_output", OracleDbType.Varchar2);
-                p_output.Direction = ParameterDirection.Output;
-                p_output.Size = 32767;
-                cmd.Parameters.Add(p_output);
-                cmd.ExecuteNonQuery();
-
-                // Get the result from the output parameter  
-                string result = p_output.Value.ToString();
-                ViewData["result"] = result;
+                try
+                {
+                   // Add output parameter  
+                   OracleParameter p_output = new OracleParameter("p_output", OracleDbType.Varchar2);
+                   p_output.Direction = ParameterDirection.Output;
+                   p_output.Size = 32767;
+                   cmd.Parameters.Add(p_output);
+                   cmd.ExecuteNonQuery();
+                    
+                   // Get the result from the output parameter  
+                   string result = p_output.Value.ToString();
+                   ViewData["showStudentGpaList"] = result;
+                } 
+                catch (OracleException ex)
+                {
+                    ViewData["showStudentGpaList"] = ex.Message;
+                } 
+                finally
+                {
+                    con.Close();
+                }
             }
         }
 
-        public void OnGetAccessGradeReport(int selectedStudentId)
+        public void OnPostAccessGradeReport(string i_student_id)
+        {
+            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            {
+                con.Open();
+                OracleCommand cmd = con.CreateCommand();
+                cmd.CommandText = "STUDENT_REPORTS.get_student_grade_report";
+                cmd.CommandType = CommandType.StoredProcedure;
+                try
+                {
+                   cmd.Parameters.Add("i_student_id", OracleDbType.Int32).Value = 123;
+                   cmd.Parameters.Add("p_report_date", OracleDbType.Date);
+                
+                   OracleParameter o_output = new OracleParameter("p_output", OracleDbType.Varchar2);
+                   o_output.Direction = ParameterDirection.Output;
+                   o_output.Size = 32767;
+                   cmd.Parameters.Add(o_output);
+
+                   cmd.ExecuteNonQuery();
+                   string result = cmd.Parameters["p_output"].Value.ToString();
+                   ViewData["showGradeReport"] = result;
+                }
+                catch (OracleException ex)
+                {
+                    ViewData["showGradeReport"] = ex.Message;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        /*public void OnGetAccessGradeReport(int selectedStudentId)
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
@@ -72,6 +115,6 @@ namespace Package.Pages
                 string tableHtml = p_output.Value.ToString();
                 ViewData["tableHtml"] = tableHtml;
             }
-        }
+        }*/
     }
 }

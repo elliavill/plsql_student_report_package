@@ -1,0 +1,77 @@
+CREATE OR REPLACE PACKAGE BODY STUDENT_REPORTS  
+AS 
+   -- Define the function to get letter grade  
+   FUNCTION get_letter_grade(p_grade_number NUMBER)  
+   RETURN VARCHAR2 IS v_letter_grade VARCHAR2(2);  
+   BEGIN  
+      SELECT LETTER_GRADE INTO v_letter_grade  
+      FROM GRADE_CONVERSION  
+      WHERE floor(p_grade_number)  
+      BETWEEN MIN_GRADE AND MAX_GRADE;  
+      RETURN v_letter_grade;  
+      END get_letter_grade;  
+
+   -- Define the function to get gpa point FUNCTION  
+   FUNCTION get_gpa_point(p_grade_number NUMBER)  
+   RETURN NUMBER IS gpa_point NUMBER(3,2);  
+   BEGIN  
+      SELECT grade_point INTO gpa_point  
+      FROM grade_conversion  
+      WHERE floor(p_grade_number)  
+      BETWEEN MIN_GRADE AND MAX_GRADE;  
+      RETURN gpa_point;  
+   END get_gpa_point;  
+
+   -- Define the procedure to get student gpa list  
+   PROCEDURE get_student_gpa_list ( p_output OUT VARCHAR2 )  
+   IS v_output VARCHAR2(32767);  
+   BEGIN  
+       -- Start building the HTML form with a dropdown list  
+       v_output := '<form method="post">';  
+       v_output := v_output || '<label for="studentList">Select a student:</label>';  
+       v_output := v_output || '<select name="selectedStudentId" id="studentList">';  
+
+       -- Get the data for the specified student and loop through each row to add it to the HTML dropdown list  
+       FOR row_student IN (  
+          SELECT student_id as option_value,  
+             student_id || ' ' || first_name || ' ' || last_name || ' (Avg GPA: ' || get_gpa_point(avg(numeric_grade)) || ')' as display_info  
+       FROM course  
+       JOIN section USING(course_no)  
+       JOIN grade USING (section_id)  
+       JOIN student USING (student_id)  
+       GROUP BY student_id, first_name, last_name, section_id  
+       ORDER BY last_name, first_name ) LOOP v_output := v_output || '<option value="' || row_student.option_value || '">' || row_student.display_info || '</option>';  
+       END LOOP;  
+     
+       -- Finish building the HTML form with a submit button and assign it to the output parameter  
+       v_output := v_output || '</select>';  
+       v_output := v_output || '<button type="submit" onchange="OnPostAccessGradeReport()">Get Grade Report</button>';  
+       v_output := v_output || '</form>';  
+       p_output := v_output; 
+   END get_student_gpa_list;  
+
+   -- Procedure to get student grade report  
+   PROCEDURE get_student_grade_report (  
+      i_student_id IN NUMBER,  
+      p_report_date IN DATE,  
+      p_output OUT VARCHAR2 )  
+   IS v_output VARCHAR2(32767);  
+   BEGIN  
+      v_output := '<table>';  
+      v_output := v_output || '<tr><td colspan="6">Class Grade report for ' || to_char(p_report_date)|| ' by section</td></tr>';  
+      v_output := v_output || '<tr><td>student_id</td><td>last_name</td><td>first_name</td><td>description</td><td>section_id</td><td>grade</td></tr>';  
+       FOR row_report IN (  
+           SELECT student_id, last_name, first_name, description, section_id, GET_LETTER_GRADE(avg(numeric_grade)) as letter_grade
+           FROM course JOIN section USING(course_no)  
+           JOIN grade USING (section_id)  
+           JOIN student USING (student_id)  
+           WHERE student_id = i_student_id 
+           GROUP BY student_id, first_name, last_name, description, section_id
+           ORDER BY description, section_id, student_id
+           ) LOOP  
+              v_output := v_output || '<tr><td>' || row_report.student_id || '</td><td>' || row_report.last_name || '</td><td>' || row_report.first_name || '</td><td>' || row_report.description || '</td><td>' || row_report.section_id || '</td><td>' || row_report.letter_grade || '</td></tr>';  
+           END LOOP;  
+       v_output := v_output || '</table>';  
+       p_output := v_output;  
+   END get_student_grade_report;  
+END student_reports; 

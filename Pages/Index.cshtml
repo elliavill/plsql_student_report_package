@@ -9,13 +9,10 @@
    <h3>Aurel Villyani</h3>
    @using (Html.BeginForm())
    {
-      <button type="submit" name="handler" value="get_gpa_list" asp-page-handler="AccessStudentList">Get Student List</button>
-      <button type="submit" name="handler" value="get_grade_report" asp-page-handler="AccessGradeReport">Get Grade Report</button>
+      <button type="submit" value="get_gpa_list" asp-page-handler="AccessStudentList">Get Student List</button>
+      <button type="submit" value="get_grade_report" asp-page-handler="AccessGradeReport">Get Grade Report</button>
 
-      <h2>@Html.Raw(@ViewData["result"])</h2>
-      @if (@ViewData["tableHtml"] != null)
-      {
-         @ViewData["tableHtml"];
-      }
+      <h2>@Html.Raw(@ViewData["showStudentGpaList"])</h2>
+      <p class="text-center">@Html.Raw(@ViewData["showGradeReport"])</p>
    }
 </div>
