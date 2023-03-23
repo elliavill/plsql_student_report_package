@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE BODY STUDENT_REPORTS  
+create or replace PACKAGE BODY STUDENT_REPORTS  
 AS 
    -- Define the function to get letter grade  
    FUNCTION get_letter_grade(p_grade_number NUMBER)  
@@ -42,24 +42,23 @@ AS
        GROUP BY student_id, first_name, last_name, section_id  
        ORDER BY last_name, first_name ) LOOP v_output := v_output || '<option value="' || row_student.option_value || '">' || row_student.display_info || '</option>';  
        END LOOP;  
-     
+
        -- Finish building the HTML form with a submit button and assign it to the output parameter  
        v_output := v_output || '</select>';  
-       v_output := v_output || '<button type="submit" onchange="OnPostAccessGradeReport()">Get Grade Report</button>';  
+       v_output := v_output || '<button type="submit">Get Grade Report</button>';  
        v_output := v_output || '</form>';  
        p_output := v_output; 
    END get_student_gpa_list;  
 
    -- Procedure to get student grade report  
    PROCEDURE get_student_grade_report (  
-      i_student_id IN NUMBER,  
-      p_report_date IN DATE,  
-      p_output OUT VARCHAR2 )  
-   IS v_output VARCHAR2(32767);  
+      i_student_id IN NUMBER,
+      p_output OUT VARCHAR)  
+   IS   
    BEGIN  
-      v_output := '<table>';  
-      v_output := v_output || '<tr><td colspan="6">Class Grade report for ' || to_char(p_report_date)|| ' by section</td></tr>';  
-      v_output := v_output || '<tr><td>student_id</td><td>last_name</td><td>first_name</td><td>description</td><td>section_id</td><td>grade</td></tr>';  
+      p_output := '<table>';  
+      p_output := p_output || '<tr><td colspan="6">Class Grade report for ' || g_report_date || ' by section</td></tr>';  
+      p_output := p_output || '<tr><td>student_id</td><td>last_name</td><td>first_name</td><td>description</td><td>section_id</td><td>grade</td></tr>';  
        FOR row_report IN (  
            SELECT student_id, last_name, first_name, description, section_id, GET_LETTER_GRADE(avg(numeric_grade)) as letter_grade
            FROM course JOIN section USING(course_no)  
@@ -69,9 +68,8 @@ AS
            GROUP BY student_id, first_name, last_name, description, section_id
            ORDER BY description, section_id, student_id
            ) LOOP  
-              v_output := v_output || '<tr><td>' || row_report.student_id || '</td><td>' || row_report.last_name || '</td><td>' || row_report.first_name || '</td><td>' || row_report.description || '</td><td>' || row_report.section_id || '</td><td>' || row_report.letter_grade || '</td></tr>';  
+              p_output := p_output || '<tr><td>' || row_report.student_id || '</td><td>' || row_report.last_name || '</td><td>' || row_report.first_name || '</td><td>' || row_report.description || '</td><td>' || row_report.section_id || '</td><td>' || row_report.letter_grade || '</td></tr>';  
            END LOOP;  
-       v_output := v_output || '</table>';  
-       p_output := v_output;  
+       p_output := p_output || '</table>';    
    END get_student_grade_report;  
 END student_reports; 
