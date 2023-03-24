@@ -39,14 +39,13 @@ namespace Package.Pages
                     p_output.Size = 32767; 
                     p_output.ParameterName = "p_output";
                     p_output.Direction = ParameterDirection.Output;
-
                     cmd.Parameters.Add(p_output);
                     cmd.ExecuteNonQuery();
-                    
+
                     // Get the result from the output parameter  
-                    string result = p_output.Value.ToString();
-                    ViewData["showStudentGpaList"] = result;
-                    var get_id = HttpContext.Request.Form["selectedStudentId"];
+                    ViewData["showStudentGpaList"] = p_output.Value.ToString();
+                     
+                    var get_id = HttpContext.Request.Form["selectedStudentId"].ToString();
                     OnPostAccessGradeReport(get_id);
                 } 
                 catch (OracleException ex)
@@ -60,7 +59,7 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostAccessGradeReport(string selectedStudentId) 
+        public void OnPostAccessGradeReport(String id) 
         { 
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE")) 
             { 
@@ -69,16 +68,16 @@ namespace Package.Pages
                 cmd.CommandText = "STUDENT_REPORTS.get_student_grade_report"; 
                 cmd.CommandType = CommandType.StoredProcedure; 
                 try 
-                { 
-                    cmd.Parameters.Add("i_student_id", OracleDbType.Int32).Value = selectedStudentId;
-                    OracleParameter o_output = new OracleParameter("p_output", OracleDbType.Varchar2); 
-                    o_output.Direction = ParameterDirection.Output; 
-                    o_output.Size = 32767; 
-
-                    cmd.Parameters.Add(o_output); 
-                    cmd.ExecuteNonQuery(); 
-                    string result = cmd.Parameters["p_output"].Value.ToString(); 
-                    ViewData["showGradeReport"] = result; 
+                {                     
+                    OracleParameter displayTable = new OracleParameter();
+                    displayTable.OracleDbType = OracleDbType.Varchar2;
+                    displayTable.ParameterName = "p_output";
+                    displayTable.Direction = ParameterDirection.Output;
+                    displayTable.Size = 32767;
+                    cmd.Parameters.Add("i_student_id", id);
+                    cmd.Parameters.Add(displayTable); 
+                    cmd.ExecuteNonQuery();
+                    ViewData["showGradeReport"] = displayTable.Value.ToString();
                 } 
                 catch (OracleException ex) 
                 { 
