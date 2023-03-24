@@ -24,6 +24,7 @@ namespace Package.Pages
 
         }
 
+        // Display the dropdown with the list of student and their current GPA
         public void OnPostAccessStudentList()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
@@ -41,10 +42,9 @@ namespace Package.Pages
                     p_output.Direction = ParameterDirection.Output;
                     cmd.Parameters.Add(p_output);
                     cmd.ExecuteNonQuery();
-
-                    // Get the result from the output parameter  
                     ViewData["showStudentGpaList"] = p_output.Value.ToString();
                      
+                    // Display the grade report based on selected student
                     var get_id = HttpContext.Request.Form["selectedStudentId"].ToString();
                     OnPostAccessGradeReport(get_id);
                 } 
@@ -59,6 +59,7 @@ namespace Package.Pages
             }
         }
 
+        // Display grade report table
         public void OnPostAccessGradeReport(String id) 
         { 
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE")) 

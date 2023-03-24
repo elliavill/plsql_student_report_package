@@ -12,6 +12,14 @@ a {
   color: #0366d6;
 }
 
+table, th, td {
+   border: 1px solid grey;
+}
+
+button {
+
+}
+
 .btn-primary {
   color: #fff;
   background-color: #1b6ec2;
@@ -49,6 +57,17 @@ html {
 button.accept-policy {
   font-size: 1rem;
   line-height: inherit;
+}
+
+table {
+   border-collapse: collapse;
+   border: 1px solid;
+   /* padding: 10px; */
+   display: -webkit-inline-box;
+}
+
+td {
+   padding: 10px;
 }
 
 /* Sticky footer styles
