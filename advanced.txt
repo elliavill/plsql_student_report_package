@@ -1,0 +1,46 @@
+CREATE OR REPLACE PACKAGE student_classes
+AS
+  PROCEDURE get_instructor_list(p_output OUT VARCHAR);
+END;
+
+
+create or replace PACKAGE BODY STUDENT_CLASSES
+AS 
+   PROCEDURE get_instructor_list(p_output OUT VARCHAR)
+   IS
+   BEGIN
+      p_output := p_output || '<label for="instructorList">Select an instructor:</label><br>';  
+      p_output := p_output || '<select name="selectedStudentId" id="studentList">';  
+      FOR row_instructor IN(
+         SELECT instructor_id as option_value,
+                salutation || '. ' || first_name || ' ' || last_name as display_text  
+         FROM instructor)
+      LOOP 
+         p_output := p_output || '<option value="' || row_instructor.option_value || '">' || row_instructor.display_text || '</option>';  
+      END LOOP;  
+      p_output := p_output || '</select><br />';  
+      p_output := p_output || '<button type="submit">Get Intructor List</button>';  
+      p_output := p_output; 
+      END get_instructor_list;
+END STUDENT_CLASSES;
+
+
+
+CREATE OR REPLACE PROCEDURE get_instructor_list (
+   p_output OUT VARCHAR)  
+IS 
+BEGIN  
+   p_output := p_output || '<label for="instructorList">Select an instructor:</label><br>';  
+   p_output := p_output || '<select name="selectedStudentId" id="studentList">';  
+   FOR row_instructor IN(
+      SELECT instructor_id as option_value,
+             salutation || '. ' || first_name || ' ' || last_name as display_text  
+      FROM instructor)
+   LOOP 
+      p_output := p_output || '<option value="' || row_instructor.option_value || '">' || row_instructor.display_text || '</option>';  
+   END LOOP;  
+   p_output := p_output || '</select><br />';  
+   p_output := p_output || '<button type="submit">Get Intructor List</button>';  
+   p_output := p_output; 
+END get_instructor_list;  
+
