@@ -9,8 +9,13 @@
    <h3>Aurel Villyani</h3>
    @using (Html.BeginForm())
    {
-      <button class="btn-primary" type="submit" value="get_gpa_list" asp-page-handler="AccessStudentList">Get Student List</button>
-      <h2>@Html.Raw(@ViewData["showStudentGpaList"])</h2>
-      <p>@Html.Raw(@ViewData["showGradeReport"])</p>
+      <button class="btn-primary" type="submit" value="get_instructor_list" asp-page-handler="AccessInstructorList">Get Instructor List</button>
+      <h2>@Html.Raw(@ViewData["showInstructorList"])</h2>
+      @*<p>@Html.Raw(@ViewData["showGradeReport"])</p>*@
+   }
+
+   @if(ViewData["instructorList"] != null)
+   {
+      @Html.DropDownList("selectedInstructorId", (IEnumerable<SelectListItem>)ViewData["instructorList"])
    }
 </div>
