@@ -32,7 +32,7 @@ namespace Package.Pages
             {
                 con.Open();
                 OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = "STUDENT_CLASSES.get_instructor_list";
+                cmd.CommandText = "project4.get_instructor_list";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
@@ -66,7 +66,7 @@ namespace Package.Pages
             {
                 con.Open();
                 OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = "STUDENT_CLASSES.get_instructor_list";
+                cmd.CommandText = "project4.get_instructor_list";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
