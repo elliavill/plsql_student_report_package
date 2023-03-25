@@ -34,6 +34,7 @@ namespace Package.Pages
                 OracleCommand cmd = con.CreateCommand();
                 cmd.CommandText = "project4.get_instructor_list";
                 cmd.CommandType = CommandType.StoredProcedure;
+                cmd.BindByName = true;
                 try
                 {
                     OracleParameter p_output = new OracleParameter();
@@ -44,14 +45,19 @@ namespace Package.Pages
 
                     OracleDataReader reader = cmd.ExecuteReader();
                     List<SelectListItem> instructorList = new List<SelectListItem>();
+                    // Get the instructor name and display it with thei id, salutation, first name, and last name
                     while (reader.Read())
                     {
-                        string instructorName = reader.GetString(1) + " " + reader.GetString(2);
-                        instructorList.Add(new SelectListItem
-                        {
-                            Text = instructorName,
-                            Value = reader.GetInt32(0).ToString()
-                        });
+                        string instructorName = reader.GetInt32(0).ToString() + " " +
+                                                reader.GetString(1) + " " + 
+                                                reader.GetString(2) + " " +
+                                                reader.GetString(3);
+                        // Populate the existing instructor
+                        SelectListItem instructor = new SelectListItem();
+                        instructor.Text = instructorName;
+                        instructor.Value = reader.GetInt32(0).ToString();
+                        //instructor.Selected = true;
+                        instructorList.Add(instructor);
                     }
                     ViewData["showInstructorList"] = instructorList;
                     reader.Close();
