@@ -32,68 +32,29 @@ namespace Package.Pages
             {
                 con.Open();
                 OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = "STUDENT_CLASSES.get_instructor_list";
+                cmd.CommandText = "project4.get_instructor_list";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
                     OracleParameter p_output = new OracleParameter();
-                    p_output.OracleDbType = OracleDbType.Varchar2;
-                    p_output.Size = 32767; 
-                    p_output.ParameterName = "p_output";
-                    p_output.Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add(p_output);
-                    cmd.ExecuteNonQuery();
-                    ViewData["showInstructorList"] = p_output.Value.ToString();
-                     
-                    // Display the grade report based on selected student
-                    //var get_id = HttpContext.Request.Form["selectedStudentId"].ToString();
-                    //OnPostAccessGradeReport(get_id);
-                } 
-                catch (OracleException ex)
-                {
-                    ViewData["showInstructorList"] = ex.Message;
-                } 
-                finally
-                {
-                    con.Close();
-                }
-            }
-        }
-
-        public void instructorList()
-        {
-            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
-            {
-                con.Open();
-                OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = "STUDENT_CLASSES.get_instructor_list";
-                cmd.CommandType = CommandType.StoredProcedure;
-                try
-                {
-                    OracleParameter p_output = new OracleParameter();
-                    p_output.OracleDbType = OracleDbType.Varchar2;
-                    p_output.Size = 32767;
+                    p_output.OracleDbType = OracleDbType.RefCursor;
                     p_output.ParameterName = "p_output";
                     p_output.Direction = ParameterDirection.Output;
                     cmd.Parameters.Add(p_output);
 
                     OracleDataReader reader = cmd.ExecuteReader();
-                    List<SelectListItem> dataList = new List<SelectListItem> { };
-                    ViewData["getInstructorData"] = "";
+                    List<SelectListItem> instructorList = new List<SelectListItem>();
                     while (reader.Read())
                     {
-                        ViewData["getInstructorData"] += reader.GetString(0) + "<br>";
-
-                        SelectListItem item = new SelectListItem();
-                        item.Text = reader.GetString(0);
-                        item.Value = reader.GetString(1);
-                        // Pull the data list, array of object
-                        item.Selected = reader.GetBoolean(0);
-                        dataList.Add(item);
+                        string instructorName = reader.GetString(1) + " " + reader.GetString(2);
+                        instructorList.Add(new SelectListItem
+                        {
+                            Text = instructorName,
+                            Value = reader.GetInt32(0).ToString()
+                        });
                     }
-
-                    cmd.ExecuteNonQuery();
-                    ViewData["instructorList"] = p_output.Value.ToString();
+                    ViewData["showInstructorList"] = instructorList;
+                    reader.Close();
                 }
                 catch (OracleException ex)
                 {
@@ -105,37 +66,5 @@ namespace Package.Pages
                 }
             }
         }
-
-        // Display grade report table
-        /*public void OnPostAccessGradeReport(String id) 
-        { 
-            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE")) 
-            { 
-                con.Open(); 
-                OracleCommand cmd = con.CreateCommand(); 
-                cmd.CommandText = "STUDENT_REPORTS.get_student_grade_report"; 
-                cmd.CommandType = CommandType.StoredProcedure; 
-                try 
-                {                     
-                    OracleParameter displayTable = new OracleParameter();
-                    displayTable.OracleDbType = OracleDbType.Varchar2;
-                    displayTable.ParameterName = "p_output";
-                    displayTable.Direction = ParameterDirection.Output;
-                    displayTable.Size = 32767;
-                    cmd.Parameters.Add("i_student_id", id);
-                    cmd.Parameters.Add(displayTable); 
-                    cmd.ExecuteNonQuery();
-                    ViewData["showGradeReport"] = displayTable.Value.ToString();
-                } 
-                catch (OracleException ex) 
-                { 
-                    ViewData["showGradeReport"] = ex.Message; 
-                } 
-                finally 
-                { 
-                    con.Close(); 
-                } 
-            } 
-        } */
     }
 }
