@@ -22,7 +22,7 @@ namespace Package.Pages
 
         public void OnGet()
         {
-            OnPostAccessInstructorList();
+           
         }
 
         // Display the dropdown with the list of instructors
@@ -91,7 +91,7 @@ namespace Package.Pages
 
                     OracleParameter getInstructorId = new OracleParameter();
                     getInstructorId.OracleDbType = OracleDbType.Int32;
-                    getInstructorId.ParameterName = "p_output";
+                    getInstructorId.ParameterName = "p_instructor_id";
                     getInstructorId.Direction = ParameterDirection.Input;
                     getInstructorId.Value = HttpContext.Request.Form["instructorList"];
                     cmd.Parameters.Add(getInstructorId);
