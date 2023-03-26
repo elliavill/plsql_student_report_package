@@ -33,7 +33,6 @@ AS
    END update_section_capacity; 
 END project4;
 
-
 ============================================== OUTPUT
 COURSE_NO DESCRIPTION SECTION_ID SECTION_NO START_DATE_TIME LOCATION CAPACITY
 25	Intro to Programming	87	3	14-APR-07	L507	25
