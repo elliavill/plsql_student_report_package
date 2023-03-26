@@ -10,11 +10,11 @@
    @using (Html.BeginForm())
    {
       <button class="btn-primary" type="submit" value="get_instructor_list" asp-page-handler="AccessInstructorList">Get Instructor List</button>
-   }
-   @if (ViewData["showInstructorList"] != null)
-   {
-      @Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])
-      <button>Get Instructor Info</button>
-      @Html.Raw(@ViewData["showInstructorInfo"])
+      @if (ViewData["showInstructorList"] != null)
+      {
+         @Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])
+         <button>Get Instructor Info</button>
+         @Html.Raw(@ViewData["showInstructorInfo"])
+      }
    }
 </div>

@@ -1,46 +1,43 @@
-CREATE OR REPLACE PACKAGE student_classes
+CREATE OR REPLACE PACKAGE project4
 AS
-  PROCEDURE get_instructor_list(p_output OUT VARCHAR);
-END;
+   TYPE instructor_info_cursor IS REF CURSOR;
+   PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR);
+   PROCEDURE get_instructor_info(p_instructor_id IN NUMBER, p_output OUT SYS_REFCURSOR);
+   PROCEDURE update_section_capacity(p_section_id IN NUMBER, p_capacity IN NUMBER);
+END project4;
 
+CREATE OR REPLACE PACKAGE BODY project4 
+AS  
+   -- Get list of instructor and display it later in dropdown list
+   PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR) 
+   IS 
+   BEGIN 
+      OPEN p_output FOR  
+      SELECT INSTRUCTOR_ID, SALUTATION, FIRST_NAME, LAST_NAME  
+        FROM INSTRUCTOR;  
+   END get_instructor_list; 
 
-create or replace PACKAGE BODY STUDENT_CLASSES
-AS 
-   PROCEDURE get_instructor_list(p_output OUT VARCHAR)
-   IS
-   BEGIN
-      p_output := p_output || '<label for="instructorList">Select an instructor:</label><br>';  
-      p_output := p_output || '<select name="selectedStudentId" id="studentList">';  
-      FOR row_instructor IN(
-         SELECT instructor_id as option_value,
-                salutation || '. ' || first_name || ' ' || last_name as display_text  
-         FROM instructor)
-      LOOP 
-         p_output := p_output || '<option value="' || row_instructor.option_value || '">' || row_instructor.display_text || '</option>';  
-      END LOOP;  
-      p_output := p_output || '</select><br />';  
-      p_output := p_output || '<button type="submit">Get Intructor List</button>';  
-      p_output := p_output; 
-      END get_instructor_list;
-END STUDENT_CLASSES;
+   PROCEDURE get_instructor_info(p_instructor_id IN NUMBER, p_output OUT SYS_REFCURSOR) 
+   IS 
+   BEGIN 
+      OPEN p_output FOR 
+      SELECT 
+        i.INSTRUCTOR_ID, i.SALUTATION, i.FIRST_NAME, i.LAST_NAME, c.COURSE_NO, 
+        c.DESCRIPTION, c.COST, c.PREREQUISITE, 
+        s.SECTION_ID, s.SECTION_NO, s.START_DATE_TIME, 
+        s.LOCATION, s.CAPACITY 
+      FROM 
+        INSTRUCTOR i 
+        JOIN SECTION s ON i.INSTRUCTOR_ID = s.INSTRUCTOR_ID 
+        JOIN COURSE c ON s.COURSE_NO = c.COURSE_NO 
+      WHERE 
+        i.INSTRUCTOR_ID = p_instructor_id; 
+   END get_instructor_info; 
 
-
-
-CREATE OR REPLACE PROCEDURE get_instructor_list (
-   p_output OUT VARCHAR)  
-IS 
-BEGIN  
-   p_output := p_output || '<label for="instructorList">Select an instructor:</label><br>';  
-   p_output := p_output || '<select name="selectedStudentId" id="studentList">';  
-   FOR row_instructor IN(
-      SELECT instructor_id as option_value,
-             salutation || '. ' || first_name || ' ' || last_name as display_text  
-      FROM instructor)
-   LOOP 
-      p_output := p_output || '<option value="' || row_instructor.option_value || '">' || row_instructor.display_text || '</option>';  
-   END LOOP;  
-   p_output := p_output || '</select><br />';  
-   p_output := p_output || '<button type="submit">Get Intructor List</button>';  
-   p_output := p_output; 
-END get_instructor_list;  
-
+   PROCEDURE update_section_capacity(p_section_id IN NUMBER, p_capacity IN NUMBER) 
+   IS 
+   BEGIN 
+      UPDATE SECTION SET CAPACITY = p_capacity WHERE SECTION_ID = p_section_id; 
+      COMMIT; 
+   END update_section_capacity; 
+END project4;
