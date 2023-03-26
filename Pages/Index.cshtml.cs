@@ -25,7 +25,7 @@ namespace Package.Pages
 
         }
 
-        // Display the dropdown with the list of student and their current GPA
+        // Display the dropdown with the list of instructors
         public void OnPostAccessInstructorList()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
@@ -61,6 +61,9 @@ namespace Package.Pages
                     }
                     ViewData["showInstructorList"] = instructorList;
                     reader.Close();
+
+                    var get_id = HttpContext.Request.Form["instructorList"].ToString();
+                    OnPostGetInstructorInfo(get_id);
                 }
                 catch (OracleException ex)
                 {
@@ -70,6 +73,42 @@ namespace Package.Pages
                 {
                     con.Close();
                 }
+            }
+        }
+
+        public void OnPostGetInstructorInfo(string instructorId)
+        {
+            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            {
+                con.Open();
+                OracleCommand cmd = con.CreateCommand();
+                cmd.CommandText = "project4.get_instructor_info";
+                //cmd.CommandText = "BEGIN project4.get_instructor_info(:instructorId, :output); END;";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.BindByName = true;
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                try
+                {
+                    OracleParameter displayTable = new OracleParameter();
+                    displayTable.OracleDbType = OracleDbType.Varchar2;
+                    displayTable.ParameterName = "p_output";
+                    displayTable.Direction = ParameterDirection.Output;
+                    displayTable.Size = 32767;
+                    cmd.Parameters.Add("i_student_id", instructorId);
+                    cmd.Parameters.Add(displayTable);
+                    cmd.ExecuteNonQuery();
+                    ViewData["showInstructorInfo"] = displayTable.Value.ToString();
+                }
+                catch
+                {
+
+                }
+                finally
+                {
+                    con.Close();
+                }
+               
             }
         }
     }

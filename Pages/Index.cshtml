@@ -14,5 +14,7 @@
    @if (ViewData["showInstructorList"] != null)
    {
       @Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])
+      <button>Get Instructor Info</button>
+      @Html.Raw(@ViewData["showInstructorInfo"])
    }
 </div>
