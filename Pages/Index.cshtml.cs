@@ -22,7 +22,7 @@ namespace Package.Pages
 
         public void OnGet()
         {
-
+            OnPostAccessInstructorList();
         }
 
         // Display the dropdown with the list of instructors
@@ -32,7 +32,7 @@ namespace Package.Pages
             {
                 con.Open();
                 OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = "project4.get_instructor_list";
+                cmd.CommandText = @"project4.get_instructor_list";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.BindByName = true;
                 try
@@ -60,10 +60,6 @@ namespace Package.Pages
                         instructorList.Add(instructor);
                     }
                     ViewData["showInstructorList"] = instructorList;
-                    reader.Close();
-
-                    var get_id = HttpContext.Request.Form["instructorList"].ToString();
-                    OnPostGetInstructorInfo(get_id);
                 }
                 catch (OracleException ex)
                 {
@@ -76,33 +72,38 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetInstructorInfo(string instructorId)
+        public void OnPostGetInstructorInfo()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
                 con.Open();
                 OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = "project4.get_instructor_info";
-                //cmd.CommandText = "BEGIN project4.get_instructor_info(:instructorId, :output); END;";
+                cmd.CommandText = @"project4.get_instructor_info";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.BindByName = true;
-
-                cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
                     OracleParameter displayTable = new OracleParameter();
-                    displayTable.OracleDbType = OracleDbType.Varchar2;
+                    displayTable.OracleDbType = OracleDbType.RefCursor;
                     displayTable.ParameterName = "p_output";
                     displayTable.Direction = ParameterDirection.Output;
-                    displayTable.Size = 32767;
-                    cmd.Parameters.Add("i_student_id", instructorId);
                     cmd.Parameters.Add(displayTable);
-                    cmd.ExecuteNonQuery();
-                    ViewData["showInstructorInfo"] = displayTable.Value.ToString();
-                }
-                catch
-                {
 
+                    OracleParameter getInstructorId = new OracleParameter();
+                    getInstructorId.OracleDbType = OracleDbType.Int32;
+                    getInstructorId.ParameterName = "p_output";
+                    getInstructorId.Direction = ParameterDirection.Input;
+                    getInstructorId.Value = HttpContext.Request.Form["instructorList"];
+                    cmd.Parameters.Add(getInstructorId);
+
+                    OracleDataAdapter oda = new OracleDataAdapter(cmd);
+                    DataSet ds = new DataSet();
+                    oda.Fill(ds);
+                    ViewData["showInstructorInformation"] = ds.Tables[0];
+                }
+                catch (OracleException ex)
+                {
+                    ViewData["showInstructorInformation"] = ex.Message;
                 }
                 finally
                 {

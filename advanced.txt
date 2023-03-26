@@ -1,12 +1,4 @@
-CREATE OR REPLACE PACKAGE project4
-AS
-   TYPE instructor_info_cursor IS REF CURSOR;
-   PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR);
-   PROCEDURE get_instructor_info(p_instructor_id IN NUMBER, p_output OUT SYS_REFCURSOR);
-   PROCEDURE update_section_capacity(p_section_id IN NUMBER, p_capacity IN NUMBER);
-END project4;
-
-CREATE OR REPLACE PACKAGE BODY project4 
+create or replace PACKAGE BODY project4 
 AS  
    -- Get list of instructor and display it later in dropdown list
    PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR) 
@@ -17,22 +9,21 @@ AS
         FROM INSTRUCTOR;  
    END get_instructor_list; 
 
-   PROCEDURE get_instructor_info(p_instructor_id IN NUMBER, p_output OUT SYS_REFCURSOR) 
+   PROCEDURE get_instructor_info(
+      p_instructor_id IN instructor.instructor_id%TYPE, 
+      p_output OUT SYS_REFCURSOR) 
    IS 
    BEGIN 
       OPEN p_output FOR 
-      SELECT 
-        i.INSTRUCTOR_ID, i.SALUTATION, i.FIRST_NAME, i.LAST_NAME, c.COURSE_NO, 
-        c.DESCRIPTION, c.COST, c.PREREQUISITE, 
-        s.SECTION_ID, s.SECTION_NO, s.START_DATE_TIME, 
-        s.LOCATION, s.CAPACITY 
-      FROM 
-        INSTRUCTOR i 
-        JOIN SECTION s ON i.INSTRUCTOR_ID = s.INSTRUCTOR_ID 
-        JOIN COURSE c ON s.COURSE_NO = c.COURSE_NO 
-      WHERE 
-        i.INSTRUCTOR_ID = p_instructor_id; 
-   END get_instructor_info; 
+          SELECT 
+             c.COURSE_NO, c.DESCRIPTION, s.SECTION_ID, s.SECTION_NO, 
+             s.START_DATE_TIME, s.LOCATION, s.CAPACITY 
+          FROM INSTRUCTOR i 
+          JOIN SECTION s ON i.INSTRUCTOR_ID = s.INSTRUCTOR_ID 
+          JOIN COURSE c ON s.COURSE_NO = c.COURSE_NO 
+          WHERE 
+            i.INSTRUCTOR_ID = p_instructor_id; 
+      END get_instructor_info; 
 
    PROCEDURE update_section_capacity(p_section_id IN NUMBER, p_capacity IN NUMBER) 
    IS 
@@ -41,3 +32,16 @@ AS
       COMMIT; 
    END update_section_capacity; 
 END project4;
+
+
+============================================== OUTPUT
+COURSE_NO DESCRIPTION SECTION_ID SECTION_NO START_DATE_TIME LOCATION CAPACITY
+25	Intro to Programming	87	3	14-APR-07	L507	25
+120	Intro to Java Programming	148	3	24-MAY-07	L509	25
+122	Intermediate Java Programming	156	5	15-MAY-07	L507	25
+125	Java Developer I	133	4	03-MAY-07	L211	15
+134	Advanced Unix Admin	140	1	16-APR-07	L509	25
+140	Systems Analysis	117	2	02-JUN-07	L210	15
+146	Java for C/C++ Programmers	125	1	29-APR-07	L509	25
+240	Intro to the BASIC Language	101	1	16-APR-07	L509	10
+450	DB Programming with Java	109	1	14-APR-07	L507	25

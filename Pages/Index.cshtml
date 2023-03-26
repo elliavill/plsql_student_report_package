@@ -7,14 +7,36 @@
 <div class="text-center">
    <h1 class="display-4">Student Grade Reports</h1>
    <h3>Aurel Villyani</h3>
-   @using (Html.BeginForm())
-   {
-      <button class="btn-primary" type="submit" value="get_instructor_list" asp-page-handler="AccessInstructorList">Get Instructor List</button>
-      @if (ViewData["showInstructorList"] != null)
+   @*@using (Html.BeginForm())
       {
-         @Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])
-         <button>Get Instructor Info</button>
-         @Html.Raw(@ViewData["showInstructorInfo"])
+         <button class="btn-primary" type="submit" value="get_instructor_list" asp-page-handler="AccessInstructorList">Get Instructor List</button>
+      }*@
+   @if (ViewData["showInstructorList"] != null)
+   {
+      @Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])
+   }
+
+   <button asp-page-handler="GetInstructorInfo">Get Instructor Info</button>
+   @if (ViewData["showInstructorInformation"] != null)
+   {
+      var x = ViewData["showInstructorInformation"] as System.Data.DataTable;
+      @foreach (System.Data.DataRow row in x.Rows)
+      {
+         <table>
+            <tr>
+               <th>Course No</th>
+               <th>Course Name</th>
+               <th>Section ID</th>
+               <th>Section Number</th>
+               <th>Starting Date</th>
+               <th>Location</th>
+               <th>Capacity</th>
+            </tr>
+            @foreach (System.Data.DataColumn col in x.Columns){
+               <td>@row[col.ColumnName]</td>
+            }
+            @*<td>@Html.DropDownList("capacity", (IEnumerable<SelectListItem>)ViewData["cap_list"])</td>*@
+         </table>
       }
    }
 </div>
