@@ -93,7 +93,7 @@ namespace Package.Pages
                     getInstructorId.OracleDbType = OracleDbType.Int32;
                     getInstructorId.ParameterName = "p_instructor_id";
                     getInstructorId.Direction = ParameterDirection.Input;
-                    getInstructorId.Value = HttpContext.Request.Form["instructorList"];
+                    getInstructorId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
                     cmd.Parameters.Add(getInstructorId);
 
                     OracleDataAdapter oda = new OracleDataAdapter(cmd);

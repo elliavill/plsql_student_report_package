@@ -20,7 +20,7 @@
       var x = ViewData["showInstructorInformation"] as System.Data.DataTable;
       @foreach (System.Data.DataRow row in x.Rows)
       {
-         <table>
+         <table border="1" style="table-layout: fixed; width:90%">
             <tr>
                <th>Course No</th>
                <th>Course Name</th>
@@ -34,7 +34,6 @@
             {
                <td>@row[col.ColumnName]</td>
             }
-            @*<td>@Html.DropDownList("capacity", (IEnumerable<SelectListItem>)ViewData["cap_list"])</td>*@
          </table>
       }
    }
