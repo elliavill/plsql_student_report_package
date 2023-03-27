@@ -3,24 +3,34 @@
 @{
    ViewData["Title"] = "Home page";
 }
+
+<style>
+   th {
+      background-color: antiquewhite;
+   }
+   th, td{
+      padding: 10px;
+   }
+</style>
 @using (Html.BeginForm())
 {
 <div class="text-center">
-   <h1 class="display-4">Student Grade Reports</h1>
+   <h1 class="display-4">Project 4: Advanced Project</h1>
    <h3>Aurel Villyani</h3>
-   <button class="btn-primary" type="submit" value="get_instructor_list" asp-page-handler="AccessInstructorList">Get Instructor List</button>
+   @* <button class="btn-primary" type="submit" value="get_instructor_list" asp-page-handler="AccessInstructorList">Get Instructor List</button>*@
    @if (ViewData["showInstructorList"] != null)
    {
+      <label for="instructorList">Select an instructor: </label>
       @Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])
-      <button asp-page-handler="GetInstructorInfo">Get Instructor Info</button>
    }
 
+   <button asp-page-handler="GetInstructorInfo">Get Instructor Info</button>
    @if (ViewData["showInstructorInformation"] != null)
    {
-      var x = ViewData["showInstructorInformation"] as System.Data.DataTable;
-      @foreach (System.Data.DataRow row in x.Rows)
-      {
-         <table border="1" style="table-layout: fixed; width:90%">
+      var showData = ViewData["showInstructorInformation"] as System.Data.DataTable;
+      <table>
+         @foreach (System.Data.DataRow row in showData.Rows)
+         {
             <tr>
                <th>Course No</th>
                <th>Course Name</th>
@@ -30,12 +40,12 @@
                <th>Location</th>
                <th>Capacity</th>
             </tr>
-            @foreach (System.Data.DataColumn col in x.Columns)
+            @foreach (System.Data.DataColumn col in showData.Columns)
             {
                <td>@row[col.ColumnName]</td>
             }
-         </table>
-      }
+         }
+      </table>
    }
 </div>
 }

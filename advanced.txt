@@ -44,3 +44,5 @@ COURSE_NO DESCRIPTION SECTION_ID SECTION_NO START_DATE_TIME LOCATION CAPACITY
 146	Java for C/C++ Programmers	125	1	29-APR-07	L509	25
 240	Intro to the BASIC Language	101	1	16-APR-07	L509	10
 450	DB Programming with Java	109	1	14-APR-07	L507	25
+
+========================================================

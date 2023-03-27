@@ -22,7 +22,7 @@ namespace Package.Pages
 
         public void OnGet()
         {
-           
+            OnPostAccessInstructorList();
         }
 
         // Display the dropdown with the list of instructors
@@ -100,6 +100,7 @@ namespace Package.Pages
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
                     ViewData["showInstructorInformation"] = ds.Tables[0];
+                    OnPostAccessInstructorList();
                 }
                 catch (OracleException ex)
                 {
