@@ -1,3 +1,14 @@
+package head
+create or replace PACKAGE project4
+AS
+   TYPE instructor_info_cursor IS REF CURSOR;
+   PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR);
+   PROCEDURE get_instructor_info(p_instructor_id IN instructor.instructor_id%TYPE, p_output OUT SYS_REFCURSOR);
+   PROCEDURE update_section_capacity(p_section_id IN NUMBER, p_capacity IN NUMBER);
+END project4;
+
+
+========================================
 create or replace PACKAGE BODY project4 
 AS  
    -- Get list of instructor and display it later in dropdown list
