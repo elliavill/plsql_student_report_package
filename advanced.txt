@@ -16,7 +16,7 @@ AS
    BEGIN 
       OPEN p_output FOR 
           SELECT 
-             c.COURSE_NO, c.DESCRIPTION, s.SECTION_ID, s.SECTION_NO, 
+             c.DESCRIPTION, s.SECTION_NO, 
              s.START_DATE_TIME, s.LOCATION, s.CAPACITY 
           FROM INSTRUCTOR i 
           JOIN SECTION s ON i.INSTRUCTOR_ID = s.INSTRUCTOR_ID 
@@ -25,12 +25,27 @@ AS
             i.INSTRUCTOR_ID = p_instructor_id; 
       END get_instructor_info; 
 
+   -- Update capacity in each section
    PROCEDURE update_section_capacity(p_section_id IN NUMBER, p_capacity IN NUMBER) 
    IS 
    BEGIN 
       UPDATE SECTION SET CAPACITY = p_capacity WHERE SECTION_ID = p_section_id; 
       COMMIT; 
    END update_section_capacity; 
+
+   -- Function to display student list in each sections
+   FUNCTION get_students_for_section(p_section_id IN section.section_id%TYPE)RETURN SYS_REFCURSOR 
+   IS 
+      cursor_student SYS_REFCURSOR; 
+   BEGIN 
+      OPEN cursor_student FOR 
+      SELECT stud.student_id, stud.first_name, stud.last_name 
+      FROM student stud 
+      JOIN enrollment e ON stud.student_id = e.student_id
+      JOIN section sec ON e.section_id = sec.section_id 
+      WHERE sec.section_id = p_section_id; 
+    RETURN cursor_student; 
+  END get_students_for_section; 
 END project4;
 
 ============================================== OUTPUT
