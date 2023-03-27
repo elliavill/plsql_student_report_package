@@ -46,3 +46,23 @@ COURSE_NO DESCRIPTION SECTION_ID SECTION_NO START_DATE_TIME LOCATION CAPACITY
 450	DB Programming with Java	109	1	14-APR-07	L507	25
 
 ========================================================
+
+output in the front end
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+25	Intro to Programming	87	3	4/14/2007 9:30:00 AM	L507	25
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+120	Intro to Java Programming	148	3	5/24/2007 9:30:00 AM	L509	25
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+122	Intermediate Java Programming	156	5	5/15/2007 9:30:00 AM	L507	25
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+125	Java Developer I	133	4	5/3/2007 9:30:00 AM	L211	15
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+134	Advanced Unix Admin	140	1	4/16/2007 9:30:00 AM	L509	25
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+140	Systems Analysis	117	2	6/2/2007 9:30:00 AM	L210	15
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+146	Java for C/C++ Programmers	125	1	4/29/2007 9:30:00 AM	L509	25
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+240	Intro to the BASIC Language	101	1	4/16/2007 9:30:00 AM	L509	10
+Course No	Course Name	Section ID	Section Number	Starting Date	Location	Capacity
+450	DB Programming with Java	109	1	4/14/2007 10:30:00 AM	L507	25
