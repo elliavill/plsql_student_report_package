@@ -5,6 +5,10 @@
 }
 
 <style>
+   .section-box{
+      padding: 10px;
+      margin-bottom: 20px;
+   }
    th {
       background-color: antiquewhite;
    }
@@ -14,7 +18,7 @@
 </style>
 @using (Html.BeginForm())
 {
-<div class="text-center">
+<div class="">
    <h1 class="display-4">Project 4: Advanced Project</h1>
    <h3>Aurel Villyani</h3>
    @* <button class="btn-primary" type="submit" value="get_instructor_list" asp-page-handler="AccessInstructorList">Get Instructor List</button>*@
@@ -28,22 +32,26 @@
    @if (ViewData["showInstructorInformation"] != null)
    {
       var showData = ViewData["showInstructorInformation"] as System.Data.DataTable;
-      <table>
-         @foreach (System.Data.DataRow row in showData.Rows)
-         {
-            <tr>
-               <th>Course Name</th>
-               <th>Section Number</th>
-               <th>Starting Date</th>
-               <th>Location</th>
-               <th>Capacity</th>
-            </tr>
-            @foreach (System.Data.DataColumn col in showData.Columns)
-            {
-               <td>@row[col.ColumnName]</td>
-            }
-         }
-      </table>
+      @foreach (System.Data.DataRow row in showData.Rows)
+      {
+         <div class="section-box">
+            <table>
+               <tr>
+                  <th>Course Name</th>
+                  <th>Section Number</th>
+                  <th>Starting Date</th>
+                  <th>Location</th>
+                  <th>Capacity</th>
+               </tr>
+               <tr>
+                  @foreach (System.Data.DataColumn col in showData.Columns)
+                  {
+                     <td>@row[col.ColumnName]</td>
+                  }
+               </tr>
+            </table>
+         </div>
+      }
    }
-</div>
+   </div>
 }
