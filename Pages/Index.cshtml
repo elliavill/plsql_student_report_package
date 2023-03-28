@@ -32,6 +32,10 @@
       @if (ViewData["showInstructorInformation"] != null)
       {
          var showData = ViewData["showInstructorInformation"] as System.Data.DataTable;
+         foreach (System.Data.DataColumn col in showData.Columns)
+         {
+            Console.WriteLine(col.ColumnName);
+         }
          @foreach (System.Data.DataRow row in showData.Rows)
          {
             <div class="section-box">
@@ -53,17 +57,24 @@
                         @if (ViewData["showStudentInformation"] != null)
                         {
                            var studentData = ViewData["showStudentInformation"] as System.Data.DataTable;
-                           foreach (System.Data.DataRow student in studentData.Rows)
+                           foreach (System.Data.DataColumn col in studentData.Columns)
                            {
-                             <table>
-                                    <tr>
-                                       <th>Student Names</th>
-                                    </tr>
+                              Console.WriteLine(col.ColumnName);
+                           }
+                           <table>
+                              <tr>
+                                 <th>Student Names</th>
+                              </tr>
+                              @foreach (System.Data.DataRow student in studentData.Rows)
+                              {
+                                 if(student["section_id"].ToString() == row["section_id"].ToString())
+                                 {
                                     <tr>
                                        <td>@student["student_name"]</td>
                                     </tr>
-                                 </table>
-                           }
+                                 }
+                              }
+                           </table>
                         }
                      </td>
                      <td>@row["start_date_time"]</td>
