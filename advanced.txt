@@ -122,3 +122,39 @@ Course Name	Section Number	Starting Date	Location	Capacity
 Intro to the BASIC Language	1	4/16/2007 9:30:00 AM	L509	10
 Course Name	Section Number	Starting Date	Location	Capacity
 DB Programming with Java	1	4/14/2007 10:30:00 AM	L507	25
+====================
+SELECT 
+   s.FIRST_NAME || ' ' || s.LAST_NAME AS student_name 
+FROM STUDENT s 
+   JOIN ENROLLMENT e ON s.STUDENT_ID = e.STUDENT_ID 
+   JOIN SECTION se ON e.SECTION_ID = se.SECTION_ID 
+WHERE 
+   se.SECTION_ID = 87;
+
+Catherine Mierzwa
+Sean Pineda
+Julita Lippen
+Pierre Radicola
+Daniel Wicelinski
+Melvina Chamnonkool
+Lorrane Velasco
+
+
+SELECT 
+ s.section_id, c.course_no, c.DESCRIPTION,  s.SECTION_NO, 
+ s.START_DATE_TIME, s.LOCATION, s.CAPACITY 
+FROM INSTRUCTOR i 
+JOIN SECTION s ON i.INSTRUCTOR_ID = s.INSTRUCTOR_ID 
+JOIN COURSE c ON s.COURSE_NO = c.COURSE_NO 
+WHERE 
+i.INSTRUCTOR_ID = 101; 
+
+87	25	Intro to Programming	3	14-APR-07	L507	25
+148	120	Intro to Java Programming	3	24-MAY-07	L509	25
+156	122	Intermediate Java Programming	5	15-MAY-07	L507	25
+133	125	Java Developer I	4	03-MAY-07	L211	15
+140	134	Advanced Unix Admin	1	16-APR-07	L509	25
+117	140	Systems Analysis	2	02-JUN-07	L210	15
+125	146	Java for C/C++ Programmers	1	29-APR-07	L509	25
+101	240	Intro to the BASIC Language	1	16-APR-07	L509	10
+109	450	DB Programming with Java	1	14-APR-07	L507	25

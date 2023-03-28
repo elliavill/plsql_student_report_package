@@ -53,17 +53,17 @@
                         @if (ViewData["showStudentInformation"] != null)
                         {
                            var studentData = ViewData["showStudentInformation"] as System.Data.DataTable;
-                           <table>
-                              <tr>
-                                 <th>Student Names</th>
-                              </tr>
-                           @foreach (System.Data.DataRow student in studentData.Rows)
+                           foreach (System.Data.DataRow student in studentData.Rows)
                            {
-                                 <tr>
-                                    <td>@student["student_name"]</td>
-                                 </tr>
+                             <table>
+                                    <tr>
+                                       <th>Student Names</th>
+                                    </tr>
+                                    <tr>
+                                       <td>@student["student_name"]</td>
+                                    </tr>
+                                 </table>
                            }
-                           </table>
                         }
                      </td>
                      <td>@row["start_date_time"]</td>

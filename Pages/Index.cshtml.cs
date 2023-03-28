@@ -146,6 +146,7 @@ namespace Package.Pages
                     getSectionId.OracleDbType = OracleDbType.Int32;
                     getSectionId.ParameterName = "p_section_id";
                     getSectionId.Direction = ParameterDirection.Input;
+                    getSectionId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
                     cmd.Parameters.Add(getSectionId);
 
                     // Get the result set and display students enrolled in that section
@@ -154,12 +155,13 @@ namespace Package.Pages
                     displayStudent.ParameterName = "p_output";
                     displayStudent.Direction = ParameterDirection.Output;
                     cmd.Parameters.Add(displayStudent);
-                    cmd.ExecuteNonQuery();
 
-                    // Display student information
+                    // Execute the stored procedure
                     OracleDataAdapter oda = new OracleDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
+
+                    // Display student information
                     ViewData["showStudentInformation"] = ds.Tables[0];
                 }
                 catch (OracleException ex)
