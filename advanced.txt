@@ -4,12 +4,13 @@ AS
    TYPE instructor_info_cursor IS REF CURSOR;
    PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR);
    PROCEDURE get_instructor_info(p_instructor_id IN instructor.instructor_id%TYPE, 
-                                 p_output OUT SYS_REFCURSOR, 
+                                 p_section_no IN section.section_no%TYPE,
+                                 p_output OUT SYS_REFCURSOR,
                                  p_student_output OUT SYS_REFCURSOR);
+   FUNCTION get_section_capacity(p_section_id IN section.section_id%TYPE)RETURN section.capacity%type;
    PROCEDURE update_section_capacity(p_section_id IN section.section_id%TYPE, p_capacity IN section.capacity%TYPE);
    FUNCTION get_students_for_section(p_section_id IN section.section_id%TYPE)RETURN SYS_REFCURSOR;
 END project4;
-
 
 ========================================
 create or replace PACKAGE BODY project4 
@@ -25,13 +26,14 @@ AS
 
    PROCEDURE get_instructor_info(
       p_instructor_id IN instructor.instructor_id%TYPE, 
+      p_section_no IN section.section_no%TYPE, 
       p_output OUT SYS_REFCURSOR,
       p_student_output OUT SYS_REFCURSOR) 
    IS 
    BEGIN 
       OPEN p_output FOR 
           SELECT 
-             c.course_no || c.DESCRIPTION as course_name,  s.SECTION_NO, 
+             c.course_no, c.DESCRIPTION,  s.SECTION_NO, 
              s.START_DATE_TIME, s.LOCATION, s.CAPACITY 
           FROM INSTRUCTOR i 
           JOIN SECTION s ON i.INSTRUCTOR_ID = s.INSTRUCTOR_ID 
@@ -47,8 +49,19 @@ AS
          JOIN ENROLLMENT e ON sec.SECTION_ID = e.SECTION_ID
          JOIN STUDENT stud ON e.STUDENT_ID = stud.STUDENT_ID
          WHERE
-            sec.INSTRUCTOR_ID = p_instructor_id;
-      END get_instructor_info; 
+            sec.INSTRUCTOR_ID = p_instructor_id
+            and sec.section_no = p_section_no;
+      END get_instructor_info;
+      
+    FUNCTION get_section_capacity(p_section_id IN section.section_id%TYPE)
+    RETURN section.capacity%type
+    IS
+       v_capacity section.capacity%TYPE;
+    BEGIN
+       select capacity into v_capacity from section
+       where section_id = p_section_id;
+       return v_capacity;
+    END get_section_capacity;
 
    -- Update capacity in each section
    PROCEDURE update_section_capacity(p_section_id IN section.section_id%TYPE, p_capacity IN section.capacity%TYPE) 
@@ -72,7 +85,6 @@ AS
     RETURN cursor_student; 
   END get_students_for_section; 
 END project4;
-
 ============================================== OUTPUT
 COURSE_NO DESCRIPTION SECTION_ID SECTION_NO START_DATE_TIME LOCATION CAPACITY
 25	Intro to Programming	87	3	14-APR-07	L507	25

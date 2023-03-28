@@ -93,6 +93,14 @@ namespace Package.Pages
                     getInstructorId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
                     cmd.Parameters.Add(getInstructorId);
 
+                    // Get the section number associated with instructor id
+                    OracleParameter getSectionId = new OracleParameter();
+                    getSectionId.OracleDbType = OracleDbType.Int32;
+                    getSectionId.ParameterName = "p_section_no";
+                    getSectionId.Direction = ParameterDirection.Input;
+                    getSectionId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
+                    cmd.Parameters.Add(getSectionId);
+
                     // Get the result set and display each section separately
                     OracleParameter displayTable = new OracleParameter();
                     displayTable.OracleDbType = OracleDbType.RefCursor;
@@ -116,6 +124,7 @@ namespace Package.Pages
                     ViewData["showInstructorInformation"] = ds.Tables[0];
                     ViewData["showStudentInformation"] = ds.Tables[1];
                     OnPostAccessInstructorList();
+                    OnPostShowCapacity();
                 }
                 catch (OracleException ex)
                 {
@@ -125,6 +134,45 @@ namespace Package.Pages
                 {
                     con.Close();
                 }
+            }
+        }
+
+        public void OnPostShowCapacity()
+        {
+            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            {
+                con.Open();
+                OracleCommand cmd = con.CreateCommand();
+                cmd.CommandText = "PROJECT4.get_section_capacity";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.BindByName = true;
+
+                try
+                {
+                    OracleParameter getSectionId = new OracleParameter();
+                    getSectionId.OracleDbType = OracleDbType.Int32;
+                    getSectionId.ParameterName = "p_section_id";
+                    getSectionId.Direction = ParameterDirection.Input;
+                    cmd.Parameters.Add(getSectionId);
+
+                    OracleDataReader reader = cmd.ExecuteReader();
+                    List<SelectListItem> capacityList = new List<SelectListItem>();
+                    while (reader.Read())
+                    {
+                        SelectListItem capacityNumber = new SelectListItem();
+                        capacityNumber.Text = reader.GetString(0);
+                        capacityNumber.Value = reader.GetString(0);
+                        capacityNumber.Selected = true;
+                        capacityList.Add(capacityNumber);
+                    }
+
+                    ViewData["capacity_number"] = capacityList;
+                }
+                catch (OracleException ex)
+                {
+                    ViewData["capacity_number"] = ex.Message;
+                }
+                con.Close();
             }
         }
     }
