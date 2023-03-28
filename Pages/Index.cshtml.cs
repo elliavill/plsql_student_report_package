@@ -72,6 +72,8 @@ namespace Package.Pages
             }
         }
 
+        // Display the information of course/section based on specific instructor.
+        // Then, show the list of students who enrolled on that particular course/section
         public void OnPostGetInstructorInfo()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
@@ -83,12 +85,7 @@ namespace Package.Pages
                 cmd.BindByName = true;
                 try
                 {
-                    OracleParameter displayTable = new OracleParameter();
-                    displayTable.OracleDbType = OracleDbType.RefCursor;
-                    displayTable.ParameterName = "p_output";
-                    displayTable.Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add(displayTable);
-
+                    // Get the instructor id
                     OracleParameter getInstructorId = new OracleParameter();
                     getInstructorId.OracleDbType = OracleDbType.Int32;
                     getInstructorId.ParameterName = "p_instructor_id";
@@ -96,10 +93,28 @@ namespace Package.Pages
                     getInstructorId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
                     cmd.Parameters.Add(getInstructorId);
 
+                    // Get the result set and display each section separately
+                    OracleParameter displayTable = new OracleParameter();
+                    displayTable.OracleDbType = OracleDbType.RefCursor;
+                    displayTable.ParameterName = "p_output";
+                    displayTable.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(displayTable);
+
+                    // Get the student list who enrolled in that section/course
+                    OracleParameter displayStudents = new OracleParameter();
+                    displayStudents.OracleDbType = OracleDbType.RefCursor;
+                    displayStudents.ParameterName = "p_student_output";
+                    displayStudents.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(displayStudents);
+
+                    // Execute the stored procedure
                     OracleDataAdapter oda = new OracleDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
+
+                    // Display all information
                     ViewData["showInstructorInformation"] = ds.Tables[0];
+                    ViewData["showStudentInformation"] = ds.Tables[1];
                     OnPostAccessInstructorList();
                 }
                 catch (OracleException ex)

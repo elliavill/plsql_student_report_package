@@ -3,8 +3,11 @@ create or replace PACKAGE project4
 AS
    TYPE instructor_info_cursor IS REF CURSOR;
    PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR);
-   PROCEDURE get_instructor_info(p_instructor_id IN instructor.instructor_id%TYPE, p_output OUT SYS_REFCURSOR);
-   PROCEDURE update_section_capacity(p_section_id IN NUMBER, p_capacity IN NUMBER);
+   PROCEDURE get_instructor_info(p_instructor_id IN instructor.instructor_id%TYPE, 
+                                 p_output OUT SYS_REFCURSOR, 
+                                 p_student_output OUT SYS_REFCURSOR);
+   PROCEDURE update_section_capacity(p_section_id IN section.section_id%TYPE, p_capacity IN section.capacity%TYPE);
+   FUNCTION get_students_for_section(p_section_id IN section.section_id%TYPE)RETURN SYS_REFCURSOR;
 END project4;
 
 
@@ -22,22 +25,33 @@ AS
 
    PROCEDURE get_instructor_info(
       p_instructor_id IN instructor.instructor_id%TYPE, 
-      p_output OUT SYS_REFCURSOR) 
+      p_output OUT SYS_REFCURSOR,
+      p_student_output OUT SYS_REFCURSOR) 
    IS 
    BEGIN 
       OPEN p_output FOR 
           SELECT 
-             c.DESCRIPTION, s.SECTION_NO, 
+             c.course_no || c.DESCRIPTION as course_name,  s.SECTION_NO, 
              s.START_DATE_TIME, s.LOCATION, s.CAPACITY 
           FROM INSTRUCTOR i 
           JOIN SECTION s ON i.INSTRUCTOR_ID = s.INSTRUCTOR_ID 
           JOIN COURSE c ON s.COURSE_NO = c.COURSE_NO 
           WHERE 
             i.INSTRUCTOR_ID = p_instructor_id; 
+      
+      OPEN p_student_output FOR
+         SELECT
+            stud.STUDENT_ID, stud.FIRST_NAME, stud.LAST_NAME
+         FROM
+            SECTION sec
+         JOIN ENROLLMENT e ON sec.SECTION_ID = e.SECTION_ID
+         JOIN STUDENT stud ON e.STUDENT_ID = stud.STUDENT_ID
+         WHERE
+            sec.INSTRUCTOR_ID = p_instructor_id;
       END get_instructor_info; 
 
    -- Update capacity in each section
-   PROCEDURE update_section_capacity(p_section_id IN NUMBER, p_capacity IN NUMBER) 
+   PROCEDURE update_section_capacity(p_section_id IN section.section_id%TYPE, p_capacity IN section.capacity%TYPE) 
    IS 
    BEGIN 
       UPDATE SECTION SET CAPACITY = p_capacity WHERE SECTION_ID = p_section_id; 

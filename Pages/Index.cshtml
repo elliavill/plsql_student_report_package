@@ -6,8 +6,8 @@
 
 <style>
    .section-box{
-      padding: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      border: 1px solid black; @*outline the section*@
    }
    th {
       background-color: antiquewhite;
@@ -18,40 +18,67 @@
 </style>
 @using (Html.BeginForm())
 {
-<div class="">
-   <h1 class="display-4">Project 4: Advanced Project</h1>
-   <h3>Aurel Villyani</h3>
-   @* <button class="btn-primary" type="submit" value="get_instructor_list" asp-page-handler="AccessInstructorList">Get Instructor List</button>*@
-   @if (ViewData["showInstructorList"] != null)
-   {
-      <label for="instructorList">Select an instructor: </label>
-      @Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])
-   }
-
-   <button asp-page-handler="GetInstructorInfo">Get Instructor Info</button>
-   @if (ViewData["showInstructorInformation"] != null)
-   {
-      var showData = ViewData["showInstructorInformation"] as System.Data.DataTable;
-      @foreach (System.Data.DataRow row in showData.Rows)
+   <div class="">
+      <h1 class="display-4">Project 4: Advanced Project</h1>
+      <h4>Aurel Villyani</h4>
+   
+      @if (ViewData["showInstructorList"] != null)
       {
-         <div class="section-box">
-            <table>
-               <tr>
-                  <th>Course Name</th>
-                  <th>Section Number</th>
-                  <th>Starting Date</th>
-                  <th>Location</th>
-                  <th>Capacity</th>
-               </tr>
-               <tr>
-                  @foreach (System.Data.DataColumn col in showData.Columns)
-                  {
-                     <td>@row[col.ColumnName]</td>
-                  }
-               </tr>
-            </table>
-         </div>
+         <h4>Select an instructor: </h4>
+         <h4>@Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])</h4>
       }
-   }
+
+      <button asp-page-handler="GetInstructorInfo">Get Instructor Info</button>
+      @if (ViewData["showInstructorInformation"] != null)
+      {
+         var showData = ViewData["showInstructorInformation"] as System.Data.DataTable;
+         @foreach (System.Data.DataRow row in showData.Rows)
+         {
+            <div class="section-box">
+               <table>
+                  <tr>
+                     <th>Course #</th>
+                     <th>Course Name</th>
+                     <th>Section Number</th>
+                     <th>Starting Date</th>
+                     <th>Location</th>
+                     <th>Capacity</th>
+                  </tr>
+                  <tr>
+                     @foreach (System.Data.DataColumn col in showData.Columns)
+                     {
+                        <td>@row[col.ColumnName]</td>
+                     }
+                  </tr>
+               </table>
+
+               @if (ViewData["showStudentInformation"] != null)
+               {
+                  var studentData = ViewData["showStudentInformation"] as System.Data.DataTable;
+                  <div>
+                     <h4>Enrolled students: </h4>
+                     <table>
+                        <tr>
+                           <th>Student ID</th>
+                           <th>First Name</th>
+                           <th>Last Name</th>
+                        </tr>
+                     @foreach (System.Data.DataRow student in studentData.Rows)
+                     {
+                        <tr>
+                           @foreach (System.Data.DataColumn col in studentData.Columns)
+                           {
+                              <td>@student[col.ColumnName]</td>
+                           }
+                        </tr>
+                     }
+                     </table>
+                  </div>
+               }
+            </div>
+         }
+      }
+
+      
    </div>
 }
