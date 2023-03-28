@@ -27,8 +27,7 @@ AS
    PROCEDURE get_instructor_info(
       p_instructor_id IN instructor.instructor_id%TYPE, 
       p_section_no IN section.section_no%TYPE, 
-      p_output OUT SYS_REFCURSOR,
-      p_student_output OUT SYS_REFCURSOR) 
+      p_output OUT SYS_REFCURSOR) 
    IS 
    BEGIN 
       OPEN p_output FOR 
@@ -40,28 +39,33 @@ AS
           JOIN COURSE c ON s.COURSE_NO = c.COURSE_NO 
           WHERE 
             i.INSTRUCTOR_ID = p_instructor_id; 
-      
-      OPEN p_student_output FOR
-         SELECT
-            stud.STUDENT_ID, stud.FIRST_NAME, stud.LAST_NAME
-         FROM
-            SECTION sec
-         JOIN ENROLLMENT e ON sec.SECTION_ID = e.SECTION_ID
-         JOIN STUDENT stud ON e.STUDENT_ID = stud.STUDENT_ID
-         WHERE
-            sec.INSTRUCTOR_ID = p_instructor_id
-            and sec.section_no = p_section_no;
       END get_instructor_info;
-      
-    FUNCTION get_section_capacity(p_section_id IN section.section_id%TYPE)
-    RETURN section.capacity%type
-    IS
-       v_capacity section.capacity%TYPE;
-    BEGIN
-       select capacity into v_capacity from section
-       where section_id = p_section_id;
-       return v_capacity;
-    END get_section_capacity;
+
+   -- Get student list for given section 
+   PROCEDURE get_student_list( 
+      p_section_id IN SECTION.SECTION_ID%TYPE, 
+      p_output OUT SYS_REFCURSOR 
+   ) IS 
+   BEGIN 
+      OPEN p_output FOR 
+         SELECT 
+            s.FIRST_NAME || ' ' || s.LAST_NAME AS student_name 
+         FROM STUDENT s 
+            JOIN ENROLLMENT e ON s.STUDENT_ID = e.STUDENT_ID 
+            JOIN SECTION se ON e.SECTION_ID = se.SECTION_ID 
+         WHERE 
+            se.SECTION_ID = p_section_id; 
+   END get_student_list;
+
+   FUNCTION get_section_capacity(p_section_id IN section.section_id%TYPE)
+   RETURN section.capacity%type
+   IS
+      v_capacity section.capacity%TYPE;
+   BEGIN
+      select capacity into v_capacity from section
+      where section_id = p_section_id;
+      return v_capacity;
+   END get_section_capacity;
 
    -- Update capacity in each section
    PROCEDURE update_section_capacity(p_section_id IN section.section_id%TYPE, p_capacity IN section.capacity%TYPE) 

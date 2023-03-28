@@ -154,13 +154,12 @@ namespace Package.Pages
                     displayStudent.ParameterName = "p_output";
                     displayStudent.Direction = ParameterDirection.Output;
                     cmd.Parameters.Add(displayStudent);
+                    cmd.ExecuteNonQuery();
 
-                    // Execute the stored procedure
+                    // Display student information
                     OracleDataAdapter oda = new OracleDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
-
-                    // Display studentt information
                     ViewData["showStudentInformation"] = ds.Tables[0];
                 }
                 catch (OracleException ex)
