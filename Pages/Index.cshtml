@@ -42,6 +42,7 @@
                <table>
                   <tr>
                      <th>Course #</th>
+                     <th>section_id</th>
                      <th>Course Name</th>
                      <th>Section Number</th>
                      <th>Enrolled Students</th>
@@ -51,6 +52,7 @@
                   </tr>
                   <tr>
                      <td>@row["course_no"]</td>
+                     <td>@row["section_id"]</td>
                      <td>@row["description"]</td>
                      <td>@row["section_no"]</td>
                      <td>
@@ -64,16 +66,17 @@
                            <table>
                               <tr>
                                  <th>Student Names</th>
+                                 <th>Sect id</th>
                               </tr>
                               @foreach (System.Data.DataRow student in studentData.Rows)
                               {
-                                 if(student["section_id"].ToString() == row["section_id"].ToString())
-                                 {
+                                
                                     <tr>
                                        <td>@student["student_name"]</td>
+                                       <td>@student["section_id"]</td>
                                     </tr>
                                  }
-                              }
+                              
                            </table>
                         }
                      </td>
