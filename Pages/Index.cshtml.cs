@@ -85,6 +85,10 @@ namespace Package.Pages
                 cmd.BindByName = true;
                 try
                 {
+                    // Get the instructor id and section number
+                    int instructorId = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
+                    int sectionNo = Convert.ToInt32(HttpContext.Request.Form["sectionList"]);
+
                     // Get the instructor id
                     OracleParameter getInstructorId = new OracleParameter();
                     getInstructorId.OracleDbType = OracleDbType.Int32;
@@ -96,7 +100,7 @@ namespace Package.Pages
                     // Get the section number associated with instructor id
                     OracleParameter getSectionId = new OracleParameter();
                     getSectionId.OracleDbType = OracleDbType.Int32;
-                    getSectionId.ParameterName = "p_section_no";
+                    getSectionId.ParameterName = "p_section_id";
                     getSectionId.Direction = ParameterDirection.Input;
                     getSectionId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
                     cmd.Parameters.Add(getSectionId);
@@ -112,10 +116,12 @@ namespace Package.Pages
                     OracleDataAdapter oda = new OracleDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
+                    // Get the section id from the result set
+                    int sectionId = Convert.ToInt32(ds.Tables[0].Rows[0]["SECTION_ID"]);
 
                     // Display all information
                     ViewData["showInstructorInformation"] = ds.Tables[0];
-                    OnPostGetStudentInfo();
+                    OnPostGetStudentInfo(sectionId);
                     OnPostAccessInstructorList();
                     OnPostShowCapacity();
                 }
@@ -130,7 +136,7 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetStudentInfo()
+        public void OnPostGetStudentInfo(int sectionId)
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
@@ -146,7 +152,7 @@ namespace Package.Pages
                     getSectionId.OracleDbType = OracleDbType.Int32;
                     getSectionId.ParameterName = "p_section_id";
                     getSectionId.Direction = ParameterDirection.Input;
-                    getSectionId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
+                    getSectionId.Value = sectionId;
                     cmd.Parameters.Add(getSectionId);
 
                     // Get the result set and display students enrolled in that section
