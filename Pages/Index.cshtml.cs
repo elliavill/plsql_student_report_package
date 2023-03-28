@@ -108,13 +108,6 @@ namespace Package.Pages
                     displayTable.Direction = ParameterDirection.Output;
                     cmd.Parameters.Add(displayTable);
 
-                    // Get the student list who enrolled in that section/course
-                    OracleParameter displayStudents = new OracleParameter();
-                    displayStudents.OracleDbType = OracleDbType.RefCursor;
-                    displayStudents.ParameterName = "p_student_output";
-                    displayStudents.Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add(displayStudents);
-
                     // Execute the stored procedure
                     OracleDataAdapter oda = new OracleDataAdapter(cmd);
                     DataSet ds = new DataSet();
@@ -122,7 +115,7 @@ namespace Package.Pages
 
                     // Display all information
                     ViewData["showInstructorInformation"] = ds.Tables[0];
-                    ViewData["showStudentInformation"] = ds.Tables[1];
+                    OnPostGetStudentInfo();
                     OnPostAccessInstructorList();
                     OnPostShowCapacity();
                 }
@@ -137,6 +130,51 @@ namespace Package.Pages
             }
         }
 
+        public void OnPostGetStudentInfo()
+        {
+            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            {
+                con.Open();
+                OracleCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project4.get_student_list";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.BindByName = true;
+                try
+                {
+                    // Get the section where the students enrolled in
+                    OracleParameter getSectionId = new OracleParameter();
+                    getSectionId.OracleDbType = OracleDbType.Int32;
+                    getSectionId.ParameterName = "p_section_id";
+                    getSectionId.Direction = ParameterDirection.Input;
+                    cmd.Parameters.Add(getSectionId);
+
+                    // Get the result set and display students enrolled in that section
+                    OracleParameter displayStudent = new OracleParameter();
+                    displayStudent.OracleDbType = OracleDbType.RefCursor;
+                    displayStudent.ParameterName = "p_output";
+                    displayStudent.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(displayStudent);
+
+                    // Execute the stored procedure
+                    OracleDataAdapter oda = new OracleDataAdapter(cmd);
+                    DataSet ds = new DataSet();
+                    oda.Fill(ds);
+
+                    // Display studentt information
+                    ViewData["showStudentInformation"] = ds.Tables[0];
+                }
+                catch (OracleException ex)
+                {
+                    ViewData["showStudentInformation"] = ex.Message;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        // Show capacity in the dropdown list
         public void OnPostShowCapacity()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
