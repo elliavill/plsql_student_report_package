@@ -73,20 +73,18 @@
                      <td>@row["location"]</td>
                      <td>
                         <select name="updateCapacity">
-                           <option hidden>@row["capacity"]</option>
+                           <option hidden selected disabled>@row["capacity"]</option>
                            <option value="10">10</option>
                            <option value="12">12</option>
                            <option value="15">15</option>
                            <option value="15">25</option>
                         </select>
-                        <button asp-page-handler="UpdateCapacity" value="@row["capacity"]">Update</button>
+                        <button name="btnCapacity" asp-page-handler="UpdateCapacity" value="@row["section_id"]">Update</button>
                      </td>
                   </tr>
                </table>
             </div>
          }
-      }
-
-      
+      }   
    </div>
 }

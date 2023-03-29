@@ -164,22 +164,20 @@ namespace Package.Pages
         }
 
         // Show capacity in the dropdown list
-        public void OnPostUpdateCapacity(string cap)
+        public void OnPostUpdateCapacity()
         {
-            var updateCapacity = HttpContext.Request.Form["updateCapacity"].ToString();
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
-            { 
+            {
+                con.Open();
+                OracleCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project4.update_section_capacity";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.BindByName = true;
                 try
                 {
-                    con.Open();
-                    OracleCommand cmd = con.CreateCommand();
-                    cmd.CommandText = "UPDATE SECTION SET CAPACITY = :p_capacity WHERE SECTION_ID = :p_section_id";
-                    cmd.Parameters.Add(":p_capacity", updateCapacity);
-                    cmd.Parameters.Add(":p_section_id", updateCapacity);
+                    cmd.Parameters.Add("p_capacity", HttpContext.Request.Form["updateCapacity"].ToString());
+                    cmd.Parameters.Add("p_section_id", HttpContext.Request.Form["btnCapacity"].ToString());
                     cmd.ExecuteNonQuery();
-
-                    //var updateCapacity = HttpContext.Request.Form["updateCapacity"].ToString();
-                    //OnPostAccessGradeReport(updateCapacity);
                     OnPostGetStudentInfo();
                     OnPostGetInstructorInfo();
                     OnPostAccessInstructorList();
