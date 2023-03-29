@@ -74,7 +74,7 @@ namespace Package.Pages
 
         // Display the information of course/section based on specific instructor.
         // Then, show the list of students who enrolled on that particular course/section
-        public void OnPostGetInstructorInfo()
+        public void OnPostGetSectionInfo()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
@@ -178,8 +178,8 @@ namespace Package.Pages
                     cmd.Parameters.Add("p_capacity", HttpContext.Request.Form["updateCapacity"].ToString());
                     cmd.Parameters.Add("p_section_id", HttpContext.Request.Form["btnCapacity"].ToString());
                     cmd.ExecuteNonQuery();
+                    OnPostGetSectionInfo();
                     OnPostGetStudentInfo();
-                    OnPostGetInstructorInfo();
                     OnPostAccessInstructorList();
                 }
                 catch (OracleException ex)

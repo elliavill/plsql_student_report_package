@@ -31,7 +31,7 @@
          <h4>@Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])</h4>
       }
 
-      <button asp-page-handler="GetInstructorInfo">Get Instructor Info</button>
+      <button asp-page-handler="GetSectionInfo">Get Instructor Info</button>
       @if (ViewData["showInstructorInformation"] != null)
       {
          var showData = ViewData["showInstructorInformation"] as System.Data.DataTable;
@@ -62,7 +62,8 @@
                       
                               @foreach (System.Data.DataRow student in studentData.Rows)
                               {
-                                 if (student["section_id"].Equals(row["section_id"]))
+                                 // Compare if the section the students enrolled with the section that instructor in
+                                 if (student["section_id"].ToString() == row["section_id"].ToString())
                                  {
                                     <li>@student["student_name"]</li>
                                  }
@@ -77,7 +78,7 @@
                            <option value="10">10</option>
                            <option value="12">12</option>
                            <option value="15">15</option>
-                           <option value="15">25</option>
+                           <option value="25">25</option>
                         </select>
                         <button name="btnCapacity" asp-page-handler="UpdateCapacity" value="@row["section_id"]">Update</button>
                      </td>
