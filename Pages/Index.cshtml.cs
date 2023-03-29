@@ -164,37 +164,22 @@ namespace Package.Pages
         }
 
         // Show capacity in the dropdown list
-        public void OnPostUpdateCapacity(string updateCapacity)
+        public void OnPostUpdateCapacity(string cap)
         {
+            var updateCapacity = HttpContext.Request.Form["updateCapacity"].ToString();
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
-            {
-                con.Open();
-                OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project4.get_section_capacity";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.BindByName = true;
+            { 
                 try
                 {
-                    OracleParameter p_output = new OracleParameter();
-                    p_output.OracleDbType = OracleDbType.RefCursor;
-                    p_output.ParameterName = "p_output";
-                    p_output.Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add(p_output);
+                    con.Open();
+                    OracleCommand cmd = con.CreateCommand();
+                    cmd.CommandText = "UPDATE SECTION SET CAPACITY = :p_capacity WHERE SECTION_ID = :p_section_id";
+                    cmd.Parameters.Add(":p_capacity", updateCapacity);
+                    cmd.Parameters.Add(":p_section_id", updateCapacity);
+                    cmd.ExecuteNonQuery();
 
-                    OracleDataReader reader = cmd.ExecuteReader();
-                    List<SelectListItem> capacityList = new List<SelectListItem>();
-                    while (reader.Read())
-                    {
-                        // Populate the existing instructor
-                        SelectListItem capacityNumber = new SelectListItem();
-                        capacityNumber.Text = reader.GetInt32(0).ToString();
-                        capacityNumber.Value = reader.GetInt32(0).ToString();
-                        //capacityNumber.Selected = reader.GetInt32(0);
-                        capacityList.Add(capacityNumber);
-                    }
                     //var updateCapacity = HttpContext.Request.Form["updateCapacity"].ToString();
                     //OnPostAccessGradeReport(updateCapacity);
-                    ViewData["showCapacityList"] = capacityList;
                     OnPostGetStudentInfo();
                     OnPostGetInstructorInfo();
                     OnPostAccessInstructorList();
