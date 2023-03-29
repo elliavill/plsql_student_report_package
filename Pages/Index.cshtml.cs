@@ -80,7 +80,7 @@ namespace Package.Pages
             {
                 con.Open();
                 OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project4.get_instructor_info";
+                cmd.CommandText = @"project4.get_section_info";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.BindByName = true;
                 try
@@ -97,14 +97,6 @@ namespace Package.Pages
                     getInstructorId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
                     cmd.Parameters.Add(getInstructorId);
 
-                    // Get the section number associated with instructor id
-                    OracleParameter getSectionId = new OracleParameter();
-                    getSectionId.OracleDbType = OracleDbType.Int32;
-                    getSectionId.ParameterName = "p_section_id";
-                    getSectionId.Direction = ParameterDirection.Input;
-                    getSectionId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
-                    cmd.Parameters.Add(getSectionId);
-
                     // Get the result set and display each section separately
                     OracleParameter displayTable = new OracleParameter();
                     displayTable.OracleDbType = OracleDbType.RefCursor;
@@ -116,14 +108,12 @@ namespace Package.Pages
                     OracleDataAdapter oda = new OracleDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
-                    // Get the section id from the result set
-                    int sectionId = Convert.ToInt32(ds.Tables[0].Rows[0]["SECTION_ID"]);
 
                     // Display all information
                     ViewData["showInstructorInformation"] = ds.Tables[0];
-                    OnPostGetStudentInfo(sectionId);
+                    OnPostGetStudentInfo();
                     OnPostAccessInstructorList();
-                    OnPostShowCapacity();
+                    //OnPostShowCapacity();
                 }
                 catch (OracleException ex)
                 {
@@ -136,7 +126,7 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetStudentInfo(int sectionId)
+        public void OnPostGetStudentInfo()
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
@@ -147,14 +137,6 @@ namespace Package.Pages
                 cmd.BindByName = true;
                 try
                 {
-                    // Get the section where the students enrolled in
-                    OracleParameter getSectionId = new OracleParameter();
-                    getSectionId.OracleDbType = OracleDbType.Int32;
-                    getSectionId.ParameterName = "p_section_id";
-                    getSectionId.Direction = ParameterDirection.Input;
-                    getSectionId.Value = sectionId;
-                    cmd.Parameters.Add(getSectionId);
-
                     // Get the result set and display students enrolled in that section
                     OracleParameter displayStudent = new OracleParameter();
                     displayStudent.OracleDbType = OracleDbType.RefCursor;
@@ -182,42 +164,49 @@ namespace Package.Pages
         }
 
         // Show capacity in the dropdown list
-        public void OnPostShowCapacity()
+        public void OnPostUpdateCapacity(string updateCapacity)
         {
             using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
             {
                 con.Open();
                 OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = "PROJECT4.get_section_capacity";
+                cmd.CommandText = @"project4.get_section_capacity";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.BindByName = true;
-
                 try
                 {
-                    OracleParameter getSectionId = new OracleParameter();
-                    getSectionId.OracleDbType = OracleDbType.Int32;
-                    getSectionId.ParameterName = "p_section_id";
-                    getSectionId.Direction = ParameterDirection.Input;
-                    cmd.Parameters.Add(getSectionId);
+                    OracleParameter p_output = new OracleParameter();
+                    p_output.OracleDbType = OracleDbType.RefCursor;
+                    p_output.ParameterName = "p_output";
+                    p_output.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(p_output);
 
                     OracleDataReader reader = cmd.ExecuteReader();
                     List<SelectListItem> capacityList = new List<SelectListItem>();
                     while (reader.Read())
                     {
+                        // Populate the existing instructor
                         SelectListItem capacityNumber = new SelectListItem();
-                        capacityNumber.Text = reader.GetString(0);
-                        capacityNumber.Value = reader.GetString(0);
-                        capacityNumber.Selected = true;
+                        capacityNumber.Text = reader.GetInt32(0).ToString();
+                        capacityNumber.Value = reader.GetInt32(0).ToString();
+                        //capacityNumber.Selected = reader.GetInt32(0);
                         capacityList.Add(capacityNumber);
                     }
-
-                    ViewData["capacity_number"] = capacityList;
+                    //var updateCapacity = HttpContext.Request.Form["updateCapacity"].ToString();
+                    //OnPostAccessGradeReport(updateCapacity);
+                    ViewData["showCapacityList"] = capacityList;
+                    OnPostGetStudentInfo();
+                    OnPostGetInstructorInfo();
+                    OnPostAccessInstructorList();
                 }
                 catch (OracleException ex)
                 {
-                    ViewData["capacity_number"] = ex.Message;
+                    ViewData["showCapacityList"] = ex.Message;
                 }
-                con.Close();
+                finally
+                {
+                    con.Close();
+                }
             }
         }
     }

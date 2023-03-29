@@ -15,6 +15,9 @@
    th, td{
       padding: 10px;
    }
+   li {
+      list-style-type: none;
+   }
 </style>
 @using (Html.BeginForm())
 {
@@ -32,10 +35,7 @@
       @if (ViewData["showInstructorInformation"] != null)
       {
          var showData = ViewData["showInstructorInformation"] as System.Data.DataTable;
-         foreach (System.Data.DataColumn col in showData.Columns)
-         {
-            Console.WriteLine(col.ColumnName);
-         }
+         
          @foreach (System.Data.DataRow row in showData.Rows)
          {
             <div class="section-box">
@@ -59,36 +59,29 @@
                         @if (ViewData["showStudentInformation"] != null)
                         {
                            var studentData = ViewData["showStudentInformation"] as System.Data.DataTable;
-                           foreach (System.Data.DataColumn col in studentData.Columns)
-                           {
-                              Console.WriteLine(col.ColumnName);
-                           }
-                           <table>
-                              <tr>
-                                 <th>Student Names</th>
-                                 <th>Sect id</th>
-                              </tr>
+                      
                               @foreach (System.Data.DataRow student in studentData.Rows)
                               {
-                                
-                                    <tr>
-                                       <td>@student["student_name"]</td>
-                                       <td>@student["section_id"]</td>
-                                    </tr>
+                                 if (student["section_id"].Equals(row["section_id"]))
+                                 {
+                                    <li>@student["student_name"]</li>
                                  }
-                              
-                           </table>
+                              }
                         }
                      </td>
                      <td>@row["start_date_time"]</td>
                      <td>@row["location"]</td>
-                     @*<td>@Html.DropDownList("capacityList", (IEnumerable<SelectListItem>)ViewData["capacity_number"])</td>*@
-                     @*@foreach (System.Data.DataColumn col in showData.Columns)
-                     {
-                        <td>@row[col.ColumnName]</td>
-                     }*@
+                     <td>
+                        <select name="updateCapacity">
+                           <option hidden>@row["capacity"]</option>
+                           <option value="10">10</option>
+                           <option value="12">12</option>
+                           <option value="15">15</option>
+                           <option value="15">25</option>
+                        </select>
+                        <button asp-page-handler="UpdateCapacity" value="@row["capacity"]">Update</button>
+                     </td>
                   </tr>
-                  <input type="hidden" name="sectionId" value="@row["section_id"]" />
                </table>
             </div>
          }
