@@ -154,18 +154,25 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
+                    string selectedCapacity = HttpContext.Request.Form["quantityList"];
                     string selectedCustomer = HttpContext.Request.Form["customerList"];
                     string selectedInvoice = HttpContext.Request.Form["orderList"];
+
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
+                    cmd.Parameters["invoiceNumber"].Value = Convert.ToInt32(selectedInvoice);
+
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
+                    cmd.Parameters["lineNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
+
                     cmd.Parameters.Add("newQuantity", SqlDbType.Int);
+                    cmd.Parameters["newQuantity"].Value = Convert.ToInt32(selectedCapacity);
+
                     cmd.ExecuteNonQuery();
-                    //OnGet();
                     OnPostGetOrderDetails();
                     OnPostGetOrdersForCustomer(selectedInvoice);
                     OnPostGetCustomersWithOrders(selectedCustomer);
                 }
-                catch (OracleException ex)
+                catch (SqlException ex)
                 {
                     ViewData["showCapacityList"] = ex.Message;
                 }
