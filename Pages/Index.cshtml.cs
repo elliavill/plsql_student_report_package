@@ -23,11 +23,10 @@ namespace Package.Pages
 
         public void OnGet()
         {
-            OnPostGetCustomersWithOrders();
+            OnPostGetCustomersWithOrders(null);
         }
 
-        // Display the dropdown with the list of instructors
-        public void OnPostGetCustomersWithOrders()
+        public void OnPostGetCustomersWithOrders(string selectedValue)
         {
             using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
@@ -39,7 +38,6 @@ namespace Package.Pages
                 {
                     SqlDataReader reader = cmd.ExecuteReader();
                     List<SelectListItem> customerList = new List<SelectListItem>();
-                    // Get the instructor name and display it with thei id, salutation, first name, and last name
                     while (reader.Read())
                     {
                         string customerInfo = reader.GetInt32(0).ToString() + " " +
@@ -48,12 +46,15 @@ namespace Package.Pages
                         SelectListItem customer = new SelectListItem();
                         customer.Text = customerInfo;
                         customer.Value = reader["CUS_CODE"].ToString();
-                        // customer.Selected = true
+                        if (customer.Value == selectedValue)
+                        {
+                            customer.Selected = true;
+                        }
                         customerList.Add(customer);
                     }
                     ViewData["showCustomerList"] = customerList;
                 }
-                catch (OracleException ex)
+                catch (SqlException ex)
                 {
                     ViewData["showCustomerList"] = ex.Message;
                 }
@@ -64,48 +65,28 @@ namespace Package.Pages
             }
         }
 
-        // Display the information of course/section based on specific instructor.
-        // Then, show the list of students who enrolled on that particular course/section
-        public void OnPostGetSectionInfo()
+        public void OnPostGetOrderDetails()
         {
-            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
-                OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project4.get_section_info";
+                SqlCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project5_GetOrderDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.BindByName = true;
                 try
                 {
-                    // Get the instructor id and section number
-                    int instructorId = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
-                    int sectionNo = Convert.ToInt32(HttpContext.Request.Form["sectionList"]);
-
-                    // Get the instructor id
-                    OracleParameter getInstructorId = new OracleParameter();
-                    getInstructorId.OracleDbType = OracleDbType.Int32;
-                    getInstructorId.ParameterName = "p_instructor_id";
-                    getInstructorId.Direction = ParameterDirection.Input;
-                    getInstructorId.Value = Convert.ToInt32(HttpContext.Request.Form["instructorList"]);
-                    cmd.Parameters.Add(getInstructorId);
-
-                    // Get the result set and display each section separately
-                    OracleParameter displayTable = new OracleParameter();
-                    displayTable.OracleDbType = OracleDbType.RefCursor;
-                    displayTable.ParameterName = "p_output";
-                    displayTable.Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add(displayTable);
+                    string selectedValue = HttpContext.Request.Form["customerList"];
+                    cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
+                    cmd.Parameters["invoiceNumber"].Value = 1001; // INV_NUMBER
 
                     // Execute the stored procedure
-                    OracleDataAdapter oda = new OracleDataAdapter(cmd);
+                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
 
                     // Display all information
                     ViewData["showInstructorInformation"] = ds.Tables[0];
-                    OnPostGetStudentInfo();
-                    OnPostGetCustomersWithOrders();
-                    //OnPostShowCapacity();
+                    OnPostGetCustomersWithOrders(selectedValue);
                 }
                 catch (OracleException ex)
                 {
@@ -118,35 +99,32 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetStudentInfo()
+        public void OnPostGetOrdersForCustomer()
         {
-            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
-                OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project4.get_student_list";
+                SqlCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project5_GetOrdersForCustomer";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.BindByName = true;
                 try
                 {
-                    // Get the result set and display students enrolled in that section
-                    OracleParameter displayStudent = new OracleParameter();
-                    displayStudent.OracleDbType = OracleDbType.RefCursor;
-                    displayStudent.ParameterName = "p_output";
-                    displayStudent.Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add(displayStudent);
+                    string selectedValue = HttpContext.Request.Form["customerList"];
+                    cmd.Parameters.Add("customerCode", SqlDbType.Int);
+                    cmd.Parameters["customerCode"].Value = selectedValue;
 
                     // Execute the stored procedure
-                    OracleDataAdapter oda = new OracleDataAdapter(cmd);
+                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
 
-                    // Display student information
-                    ViewData["showStudentInformation"] = ds.Tables[0];
+                    // Display all information
+                    ViewData["showOrderForCustomer"] = ds.Tables[0];
+                    OnPostGetCustomersWithOrders(selectedValue);
                 }
                 catch (OracleException ex)
                 {
-                    ViewData["showStudentInformation"] = ex.Message;
+                    ViewData["showOrderForCustomer"] = ex.Message;
                 }
                 finally
                 {
@@ -170,9 +148,8 @@ namespace Package.Pages
                     cmd.Parameters.Add("  ", HttpContext.Request.Form["updateCapacity"].ToString());
                     cmd.Parameters.Add("p_section_id", HttpContext.Request.Form["btnCapacity"].ToString());
                     cmd.ExecuteNonQuery();
-                    OnPostGetSectionInfo();
-                    OnPostGetStudentInfo();
-                    OnPostGetCustomersWithOrders();
+                    
+                    //OnPostGetCustomersWithOrders();
                 }
                 catch (OracleException ex)
                 {

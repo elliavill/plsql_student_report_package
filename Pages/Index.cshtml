@@ -21,73 +21,67 @@
 </style>
 @using (Html.BeginForm())
 {
-   <div class="">
-      <h1 class="display-4">Project 4: Advanced Project</h1>
-      <h4>Aurel Villyani</h4>
-   
-      @if (ViewData["showCustomerList"] != null)
-      {
-         <h4>Select an instructor: </h4>
-         <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
-      }
+<div class="">
+   <h1 class="display-4">Project 5: SqlServer ft. ASP.NET</h1>
+   <h4>Aurel Villyani</h4>
+   <button asp-page-handler="GetCustomersWithOrders">Get Customer List</button>
+   @if (ViewData["showCustomerList"] != null)
+   {
+      <h4>Select a Customer: </h4>
+      <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
+   }
 
-      <button asp-page-handler="GetSectionInfo">Get Instructor Info</button>
-      @if (ViewData["showInstructorInformation"] != null)
+   <button asp-page-handler="GetOrdersForCustomer">Get Customer Info</button>
+   @if (ViewData["showOrderForCustomer"] != null)
+   {
+      var showData = ViewData["showOrderForCustomer"] as System.Data.DataTable;
+
+      @foreach (System.Data.DataRow row in showData.Rows)
       {
-         var showData = ViewData["showInstructorInformation"] as System.Data.DataTable;
-         
-         @foreach (System.Data.DataRow row in showData.Rows)
-         {
-            <div class="section-box">
-               <table>
-                  <tr>
-                     <th>Course #</th>
-                     <th>section_id</th>
-                     <th>Course Name</th>
-                     <th>Section Number</th>
-                     <th>Enrolled Students</th>
-                     <th>Starting Date</th>
-                     <th>Location</th>
-                     <th>Capacity</th>
-                  </tr>
-                  <tr>
-                     <td>@row["course_no"]</td>
-                     <td>@row["section_id"]</td>
-                     <td>@row["description"]</td>
-                     <td>@row["section_no"]</td>
-                     <td>
-                        @if (ViewData["showStudentInformation"] != null)
+         <div class="section-box">
+            <table>
+               <tr>
+                  <th>Customer #</th>
+                  <th>Invoice Number</th>
+                  <th>Invoice Date</th>
+               </tr>
+               <tr>
+                  <td>@row["CUS_CODE"]</td>
+                  <td>@row["INV_NUMBER"]</td>
+                  <td>@row["INV_DATE"]</td>
+                  @*<td>
+                     @if (ViewData["showStudentInformation"] != null)
+                     {
+                        var studentData = ViewData["showStudentInformation"] as System.Data.DataTable;
+
+                        @foreach (System.Data.DataRow student in studentData.Rows)
                         {
-                           var studentData = ViewData["showStudentInformation"] as System.Data.DataTable;
-                      
-                              @foreach (System.Data.DataRow student in studentData.Rows)
-                              {
-                                 // Compare if the section the students enrolled with the section that instructor in
-                                 if (student["section_id"].ToString() == row["section_id"].ToString())
-                                 {
-                                    <ul>
-                                       <li>@student["student_name"]</li>
-                                    </ul>
-                                 }
-                              }
+                           // Compare if the section the students enrolled with the section that instructor in
+                           if (student["section_id"].ToString() == row["section_id"].ToString())
+                           {
+                              <ul>
+                                 <li>@student["student_name"]</li>
+                              </ul>
+                           }
                         }
-                     </td>
-                     <td>@row["start_date_time"]</td>
-                     <td>@row["location"]</td>
-                     <td>
-                        <select name="updateCapacity">
-                           <option hidden selected disabled>@row["capacity"]</option>
-                           <option value="10">10</option>
-                           <option value="12">12</option>
-                           <option value="15">15</option>
-                           <option value="25">25</option>
-                        </select>
-                        <button name="btnCapacity" asp-page-handler="UpdateCapacity" value="@row["section_id"]">Update</button>
-                     </td>
-                  </tr>
-               </table>
-            </div>
-         }
-      }   
-   </div>
+                     }
+                  </td>
+                  <td>@row["start_date_time"]</td>
+                  <td>@row["location"]</td>
+                  <td>
+                     <select name="updateCapacity">
+                        <option hidden selected disabled>@row["capacity"]</option>
+                        <option value="10">10</option>
+                        <option value="12">12</option>
+                        <option value="15">15</option>
+                        <option value="25">25</option>
+                     </select>
+                     <button name="btnCapacity" asp-page-handler="UpdateCapacity" value="@row["section_id"]">Update</button>
+                  </td>*@
+               </tr>
+            </table>
+         </div>
+      }
+   }
+</div>
 }
