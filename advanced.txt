@@ -1,156 +1,124 @@
-package head
-create or replace PACKAGE project4
+USE [CS306_Villyani]
+GO
+/****** Object:  StoredProcedure [dbo].[project5_UpdateOrderLine]    Script Date: 3/31/2023 6:02:28 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Aurel Villyani
+-- Create date: April 6, 2023
+-- Description:	Update item quantity and remove the item if the quantity is 0
+-- =============================================
+ALTER PROCEDURE [dbo].[project5_UpdateOrderLine]
+    (@invoiceNumber INT,
+     @lineNumber INT,
+     @newQuantity INT)
 AS
-   TYPE instructor_info_cursor IS REF CURSOR;
-   PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR);
-   PROCEDURE get_instructor_info(p_instructor_id IN instructor.instructor_id%TYPE, 
-                                 p_section_id IN SECTION.SECTION_ID%TYPE, 
-                                 p_output OUT SYS_REFCURSOR);
-   PROCEDURE get_student_list(p_section_id IN SECTION.SECTION_ID%TYPE, p_output OUT SYS_REFCURSOR);
-   FUNCTION get_section_capacity(p_section_id IN section.section_id%TYPE)RETURN section.capacity%type;
-   PROCEDURE update_section_capacity(p_section_id IN section.section_id%TYPE, p_capacity IN section.capacity%TYPE);
-   FUNCTION get_students_for_section(p_course_no IN course.course_no%TYPE, p_section_no IN section.section_no%TYPE)RETURN SYS_REFCURSOR;
-END project4;
-
-========================================
-create or replace PACKAGE BODY project4 
-AS  
-   -- Get list of instructor and display it later in dropdown list
-   PROCEDURE get_instructor_list(p_output OUT SYS_REFCURSOR) 
-   IS 
-   BEGIN 
-      OPEN p_output FOR  
-      SELECT INSTRUCTOR_ID, SALUTATION, FIRST_NAME, LAST_NAME  
-        FROM INSTRUCTOR;  
-   END get_instructor_list; 
-
-   PROCEDURE get_section_info(
-     p_instructor_id instructor.instructor_id%type,
-     p_output OUT SYS_REFCURSOR) 
-   IS 
-   BEGIN 
-      OPEN p_output FOR 
-          SELECT 
-             section_id, course_no, DESCRIPTION, SECTION_NO, 
-             START_DATE_TIME, LOCATION, CAPACITY 
-          FROM SECTION
-          JOIN COURSE using(course_no)
-          WHERE instructor_id = p_instructor_id;
-   END get_section_info;
-
-   
-   -- Get student list for given section 
-   PROCEDURE get_student_list(
-      p_output OUT SYS_REFCURSOR 
-   ) IS 
-   BEGIN 
-      OPEN p_output FOR 
-         SELECT 
-            s.FIRST_NAME || ' ' || s.LAST_NAME AS student_name, se.section_id, se.course_no
-         FROM STUDENT s 
-            JOIN ENROLLMENT e ON s.STUDENT_ID = e.STUDENT_ID 
-            JOIN SECTION se ON e.SECTION_ID = se.SECTION_ID 
-            JOIN INSTRUCTOR i ON se.INSTRUCTOR_ID = i.INSTRUCTOR_ID
-            JOIN course c ON se.course_no = c.course_no;
-   END get_student_list;
-
-   PROCEDURE get_section_capacity(p_output OUT SYS_REFCURSOR) 
-   IS 
-   BEGIN 
-      OPEN p_output FOR  
-      SELECT CAPACITY  
-        FROM SECTION;  
-   END get_section_capacity; 
-
-   -- Update capacity in each section
-   PROCEDURE update_section_capacity(p_section_id IN section.section_id%TYPE, p_capacity IN section.capacity%TYPE) 
-   IS 
-   BEGIN 
-      UPDATE SECTION SET CAPACITY = p_capacity WHERE SECTION_ID = p_section_id; 
-      COMMIT; 
-   END update_section_capacity; 
-
-   -- Function to display student list in each sections
-    FUNCTION get_students_for_section(p_course_no IN course.course_no%TYPE, p_section_no IN section.section_no%TYPE)
-    RETURN SYS_REFCURSOR 
-    IS 
-       cursor_student SYS_REFCURSOR; 
-    BEGIN 
-       OPEN cursor_student FOR 
-          SELECT stud.student_id, stud.first_name, stud.last_name 
-          FROM student stud 
-          JOIN enrollment e ON stud.student_id = e.student_id
-          JOIN section sec ON e.section_id = sec.section_id 
-          WHERE sec.section_no = p_section_no AND sec.course_no = p_course_no; 
-       RETURN cursor_student; 
-    END get_students_for_section;
-END project4;
-============================================== OUTPUT
-COURSE_NO DESCRIPTION SECTION_ID SECTION_NO START_DATE_TIME LOCATION CAPACITY
-25	Intro to Programming	87	3	14-APR-07	L507	25
-120	Intro to Java Programming	148	3	24-MAY-07	L509	25
-122	Intermediate Java Programming	156	5	15-MAY-07	L507	25
-125	Java Developer I	133	4	03-MAY-07	L211	15
-134	Advanced Unix Admin	140	1	16-APR-07	L509	25
-140	Systems Analysis	117	2	02-JUN-07	L210	15
-146	Java for C/C++ Programmers	125	1	29-APR-07	L509	25
-240	Intro to the BASIC Language	101	1	16-APR-07	L509	10
-450	DB Programming with Java	109	1	14-APR-07	L507	25
-
-========================================================
-
-output in the front end
-Course Name	Section Number	Starting Date	Location	Capacity
-Intro to Programming	3	4/14/2007 9:30:00 AM	L507	25
-Course Name	Section Number	Starting Date	Location	Capacity
-Intro to Java Programming	3	5/24/2007 9:30:00 AM	L509	25
-Course Name	Section Number	Starting Date	Location	Capacity
-Intermediate Java Programming	5	5/15/2007 9:30:00 AM	L507	25
-Course Name	Section Number	Starting Date	Location	Capacity
-Java Developer I	4	5/3/2007 9:30:00 AM	L211	15
-Course Name	Section Number	Starting Date	Location	Capacity
-Advanced Unix Admin	1	4/16/2007 9:30:00 AM	L509	25
-Course Name	Section Number	Starting Date	Location	Capacity
-Systems Analysis	2	6/2/2007 9:30:00 AM	L210	15
-Course Name	Section Number	Starting Date	Location	Capacity
-Java for C/C++ Programmers	1	4/29/2007 9:30:00 AM	L509	25
-Course Name	Section Number	Starting Date	Location	Capacity
-Intro to the BASIC Language	1	4/16/2007 9:30:00 AM	L509	10
-Course Name	Section Number	Starting Date	Location	Capacity
-DB Programming with Java	1	4/14/2007 10:30:00 AM	L507	25
-====================
-SELECT 
-   s.FIRST_NAME || ' ' || s.LAST_NAME AS student_name 
-FROM STUDENT s 
-   JOIN ENROLLMENT e ON s.STUDENT_ID = e.STUDENT_ID 
-   JOIN SECTION se ON e.SECTION_ID = se.SECTION_ID 
-WHERE 
-   se.SECTION_ID = 87;
-
-Catherine Mierzwa
-Sean Pineda
-Julita Lippen
-Pierre Radicola
-Daniel Wicelinski
-Melvina Chamnonkool
-Lorrane Velasco
+BEGIN
+    IF @newQuantity = 0
+    BEGIN
+        -- Remove product from order
+        DELETE FROM Line
+        WHERE INV_NUMBER = @invoiceNumber AND LINE_NUMBER = @lineNumber
+    END
+    ELSE
+    BEGIN
+        -- Update product quantity
+        UPDATE Line
+        SET LINE_UNITS = @newQuantity
+        WHERE INV_NUMBER = @invoiceNumber AND LINE_NUMBER = @lineNumber
+    END
+END
 
 
-SELECT 
- s.section_id, c.course_no, c.DESCRIPTION,  s.SECTION_NO, 
- s.START_DATE_TIME, s.LOCATION, s.CAPACITY 
-FROM INSTRUCTOR i 
-JOIN SECTION s ON i.INSTRUCTOR_ID = s.INSTRUCTOR_ID 
-JOIN COURSE c ON s.COURSE_NO = c.COURSE_NO 
-WHERE 
-i.INSTRUCTOR_ID = 101; 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-87	25	Intro to Programming	3	14-APR-07	L507	25
-148	120	Intro to Java Programming	3	24-MAY-07	L509	25
-156	122	Intermediate Java Programming	5	15-MAY-07	L507	25
-133	125	Java Developer I	4	03-MAY-07	L211	15
-140	134	Advanced Unix Admin	1	16-APR-07	L509	25
-117	140	Systems Analysis	2	02-JUN-07	L210	15
-125	146	Java for C/C++ Programmers	1	29-APR-07	L509	25
-101	240	Intro to the BASIC Language	1	16-APR-07	L509	10
-109	450	DB Programming with Java	1	14-APR-07	L507	25
+USE [CS306_Villyani]
+GO
+/****** Object:  StoredProcedure [dbo].[project5_GetOrderDetails]    Script Date: 3/31/2023 4:42:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Aurel Villyani
+-- Create date: April 6, 2023
+-- Description:	Display the items from selected order
+-- =============================================
+ALTER PROCEDURE [dbo].[project5_GetOrderDetails](@invoiceNumber INT)
+AS
+BEGIN
+    SELECT P.P_DESCRIPT AS ProductName, 
+	       L.LINE_UNITS AS Quantity, 
+		   L.LINE_PRICE AS Price,
+           CONVERT(DECIMAL(5, 2),(L.LINE_UNITS * L.LINE_PRICE)) AS LineTotal,
+           (SELECT CONVERT(DECIMAL(5, 2), SUM(L2.LINE_UNITS * L2.LINE_PRICE))
+		    FROM Line L2 
+		    WHERE L2.INV_NUMBER = L.INV_NUMBER) AS OrderTotal,
+		   L.INV_NUMBER, P.P_CODE, L.LINE_NUMBER
+    FROM Line L
+    JOIN Product P ON L.P_CODE = P.P_CODE
+    WHERE L.INV_NUMBER = @invoiceNumber
+END
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+USE [CS306_Villyani]
+GO
+/****** Object:  StoredProcedure [dbo].[project5_GetOrdersForCustomer]    Script Date: 3/31/2023 6:02:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[project5_GetOrdersForCustomer]
+    (@customerCode INT)
+AS
+BEGIN
+	SELECT CONCAT(c.cus_fname, ' ', c.cus_lname) AS CustomerName,
+        I.INV_NUMBER as InvoiceNumber, 
+		I.INV_DATE as InvoiceDate, 
+		MAX(P.P_CODE), 
+		Count(P.P_CODE) as TotalItemOrdered,
+		I.CUS_CODE, I.INV_NUMBER
+	FROM Invoice I
+	JOIN Customer C ON I.CUS_CODE = C.CUS_CODE
+	JOIN Line L ON I.INV_NUMBER = L.INV_NUMBER
+	JOIN Product P ON L.P_CODE = P.P_CODE
+	WHERE I.CUS_CODE = @customerCode
+	GROUP BY C.CUS_FNAME, C.CUS_LNAME, I.INV_NUMBER, I.INV_DATE, I.CUS_CODE
+	ORDER BY I.INV_NUMBER ASC
+END   
+
+>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+USE [CS306_Villyani]
+GO
+/****** Object:  StoredProcedure [dbo].[project5_GetCustomersWithOrders]    Script Date: 3/31/2023 6:02:48 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[project5_GetCustomersWithOrders]
+AS
+BEGIN
+    SELECT DISTINCT C.CUS_CODE,  C.CUS_FNAME, C.CUS_LNAME
+    FROM Customer C
+    JOIN Invoice I ON C.CUS_CODE = I.CUS_CODE
+    ORDER BY C.CUS_CODE
+END
