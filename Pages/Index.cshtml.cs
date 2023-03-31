@@ -77,8 +77,7 @@ namespace Package.Pages
                 {
                     string selectedInvoice = HttpContext.Request.Form["orderList"];
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = Convert.ToInt32(selectedInvoice); // INV_NUMBER
-
+                    cmd.Parameters["invoiceNumber"].Value = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
                     // Execute the stored procedure
                     SqlDataAdapter oda = new SqlDataAdapter(cmd);
                     DataSet ds = new DataSet();

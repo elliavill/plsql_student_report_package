@@ -61,14 +61,13 @@
                   <td>@row["InvoiceDate"]</td>
                   <td>@row["TotalItemOrdered"]</td>
                   <td>@row["CUS_CODE"]</td>
-                  <td><button asp-page-handler="GetOrderDetails">Details</button></td>
+                  <td><button name="btnOrder" asp-page-handler="GetOrderDetails" value="@row["inv_number"]">Details</button></td>
                </tr>
             }
          </table>
       </div>
    }
 
-   <br />
    @if (ViewData["showOrderDetails"] != null)
    {
       var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
