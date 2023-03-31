@@ -77,7 +77,7 @@ namespace Package.Pages
                 {
                     string selectedInvoice = HttpContext.Request.Form["orderList"];
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
+                    cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnOrder"].ToString();
                     // Execute the stored procedure
                     SqlDataAdapter oda = new SqlDataAdapter(cmd);
                     DataSet ds = new DataSet();
@@ -120,7 +120,6 @@ namespace Package.Pages
                     // Display all information
                     ViewData["showOrderForCustomer"] = ds.Tables[0];
                     OnPostGetCustomersWithOrders(selectedCustomer);
-
                 }
                 catch (OracleException ex)
                 {
@@ -134,7 +133,7 @@ namespace Package.Pages
         }
 
         // Show capacity in the dropdown list
-        public void OnPostUpdateQuantity()
+        public void OnPostUpdateQuantity(int quantity)
         {
             using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
@@ -144,23 +143,21 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedCapacity = HttpContext.Request.Form["quantityList"];
-                    string selectedCustomer = HttpContext.Request.Form["customerList"];
-                    string selectedInvoice = HttpContext.Request.Form["orderList"];
+                    string selectedCapacity = HttpContext.Request.Form["quantityList"].ToString();
+                    int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
+                    int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);    
 
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = Convert.ToInt32(selectedInvoice);
+                    cmd.Parameters["invoiceNumber"].Value = quantity;
 
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
-                    cmd.Parameters["lineNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
+                    cmd.Parameters["lineNumber"].Value = HttpContext.Request.Form["btnQuantity"];
 
-                    cmd.Parameters.Add("newQuantity", SqlDbType.Int);
+                    cmd.Parameters.Add("newQuantity", SqlDbType.Text);
                     cmd.Parameters["newQuantity"].Value = Convert.ToInt32(selectedCapacity);
 
                     cmd.ExecuteNonQuery();
                     OnPostGetOrderDetails();
-                    OnPostGetOrdersForCustomer(selectedInvoice);
-                    OnPostGetCustomersWithOrders(selectedCustomer);
                 }
                 catch (SqlException ex)
                 {

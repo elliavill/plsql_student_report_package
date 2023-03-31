@@ -88,18 +88,19 @@
                   <td>@row["P_CODE"]</td>
                   <td>@row["ProductName"]</td>
                   <td>
-                     <select name="quantityList">
-                        <option hidden selected disabled>@row["Quantity"]</option>
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                        <option value="25">25</option>
-                     </select>
-                     <button name="btnQuantity" asp-page-handler="UpdateQuantity" value="@row["line_number"]">Update</button>
+                        <select name="quantityList">
+                           <option hidden selected disabled>@row["Quantity"]</option>
+                           <option value="0">0</option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="5">5</option>
+                           <option value="10">10</option>
+                           <option value="15">15</option>
+                           <option value="25">25</option>
+                        </select>
+                        <button name="btnQuantity" asp-page-handler="UpdateQuantity" asp-route-lineNumber="@row["line_number"]">Update</button>
+
                   </td>
                   <td>@row["Price"]</td>
                   <td>@row["LineTotal"]</td>
