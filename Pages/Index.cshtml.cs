@@ -75,9 +75,9 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedInvoice = HttpContext.Request.Form["orderList"].ToString();
+                    string selectedInvoice = HttpContext.Request.Form["orderList"];
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = selectedInvoice; // INV_NUMBER
+                    cmd.Parameters["invoiceNumber"].Value = Convert.ToInt32(selectedInvoice); // INV_NUMBER
 
                     // Execute the stored procedure
                     SqlDataAdapter oda = new SqlDataAdapter(cmd);
@@ -121,7 +121,7 @@ namespace Package.Pages
                                               reader.GetString(1);
                         SelectListItem order = new SelectListItem();
                         order.Text = orderInfo;
-                        order.Value = reader.GetString(0);
+                        order.Value = reader["INV_NUMBER"].ToString();
                         if (order.Value == selectedOrder)
                         {
                             order.Selected = true;

@@ -7,7 +7,6 @@
 <style>
    .section-box{
       margin-bottom: 30px;
-      border: 1px solid black; @*outline the section*@
    }
    th {
       background-color: antiquewhite;
@@ -18,16 +17,23 @@
    li {
       list-style-type: none;
    }
+
+    table td:first-child {
+       width: 300px; /* example style */
+    }
+    table td:nth-child(3){width:100px;}
+    table td:nth-child(4){width:150px;}
 </style>
 @using (Html.BeginForm())
 {
 <div class="">
    <h1 class="display-4">Project 5: SqlServer ft. ASP.NET</h1>
    <h4>Aurel Villyani</h4>
+   <br /><hr>
    @if (ViewData["showCustomerList"] != null)
    {
       <h4>Select a Customer: </h4>
-      <h6 style="color: grey;">**This list only shows customers who have orders</h6>
+      <h6 style="color: grey;">**This list only shows customers who have placed their orders</h6>
       <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
    }
    <button asp-page-handler="GetOrdersForCustomer">Get Customer Info</button>
@@ -35,22 +41,23 @@
    <br /><br>
    @if (ViewData["showOrderForCustomer"] != null)
    {
-      <h5>Select an order from the list: </h5>
-      <h5>@Html.DropDownList("orderList", (IEnumerable<SelectListItem>)ViewData["showOrderForCustomer"])</h5>
+      <hr><h4>Select an order from the list: </h4>
+      <h4>@Html.DropDownList("orderList", (IEnumerable<SelectListItem>)ViewData["showOrderForCustomer"])</h4>
       <button asp-page-handler="GetOrderDetails">Get Customer Info</button>
    }
-   
-   <br />
+
+   <br /><br>
    @if (ViewData["showOrderDetails"] != null)
    {
       var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
+      <hr><h3>List of the item(s)</h3>
       @foreach (System.Data.DataRow row in showData.Rows)
       {
          <div class="section-box">
             <table>
                <tr>
                   <th>Product Name</th>
-                  <th>Quantity</th>
+                  <th>Current Quantity</th>
                   <th>Price</th>
                   <th>Line Total</th>
                   <th>Order Total</th>
