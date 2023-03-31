@@ -65,7 +65,7 @@
                </tr>
                <tr>
                   <td>@row["ProductName"]</td>
-                  <td>@row["Quantity"]</td>
+                  <td>@row["Quantity"]  <button name="btnQuantity" asp-page-handler="UpdateQuantity" value="@row["p_code"]">Update</button></td>
                   <td>@row["Price"]</td>
                   <td>@row["LineTotal"]</td>
                   <td>@row["OrderTotal"]</td>

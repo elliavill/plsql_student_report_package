@@ -144,22 +144,26 @@ namespace Package.Pages
         }
 
         // Show capacity in the dropdown list
-        public void OnPostUpdateCapacity()
+        public void OnPostUpdateQuantity()
         {
-            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true; TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
-                OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project4.update_section_capacity";
+                SqlCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project5_UpdateOrderLine";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.BindByName = true;
                 try
                 {
-                    cmd.Parameters.Add("  ", HttpContext.Request.Form["updateCapacity"].ToString());
-                    cmd.Parameters.Add("p_section_id", HttpContext.Request.Form["btnCapacity"].ToString());
+                    string selectedCustomer = HttpContext.Request.Form["customerList"];
+                    string selectedInvoice = HttpContext.Request.Form["orderList"];
+                    cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
+                    cmd.Parameters.Add("lineNumber", SqlDbType.Int);
+                    cmd.Parameters.Add("newQuantity", SqlDbType.Int);
                     cmd.ExecuteNonQuery();
-                    
-                    //OnPostGetCustomersWithOrders();
+                    //OnGet();
+                    OnPostGetOrderDetails();
+                    OnPostGetOrdersForCustomer(selectedInvoice);
+                    OnPostGetCustomersWithOrders(selectedCustomer);
                 }
                 catch (OracleException ex)
                 {
