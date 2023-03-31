@@ -28,7 +28,7 @@ namespace Package.Pages
 
         public void OnPostGetCustomersWithOrders(string selectedValue)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -67,7 +67,7 @@ namespace Package.Pages
 
         public void OnPostGetOrderDetails()
         {
-            using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -101,7 +101,7 @@ namespace Package.Pages
 
         public void OnPostGetOrdersForCustomer(string selectedOrder)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true; TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -143,10 +143,10 @@ namespace Package.Pages
             }
         }
 
-        // Show capacity in the dropdown list
+        // Show quantity in the dropdown list
         public void OnPostUpdateQuantity()
         {
-            using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true; TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -154,13 +154,20 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
+                    string selectedCapacity = HttpContext.Request.Form["quantityList"];
                     string selectedCustomer = HttpContext.Request.Form["customerList"];
                     string selectedInvoice = HttpContext.Request.Form["orderList"];
+
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
+                    cmd.Parameters["invoiceNumber"].Value = Convert.ToInt32(selectedInvoice);
+
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
+                    cmd.Parameters["lineNumber"].Value = HttpContext.Request.Form["btnQuantity"];
+
                     cmd.Parameters.Add("newQuantity", SqlDbType.Int);
+                    cmd.Parameters["newQuantity"].Value = Convert.ToInt32(selectedCapacity);
+
                     cmd.ExecuteNonQuery();
-                    //OnGet();
                     OnPostGetOrderDetails();
                     OnPostGetOrdersForCustomer(selectedInvoice);
                     OnPostGetCustomersWithOrders(selectedCustomer);
@@ -175,5 +182,35 @@ namespace Package.Pages
                 }
             }
         }
+
+        /*
+         *  public void OnPostUpdateCapacity()
+        {
+            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            {
+                con.Open();
+                OracleCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project4.update_section_capacity";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.BindByName = true;
+                try
+                {
+                    cmd.Parameters.Add("p_capacity", HttpContext.Request.Form["updateCapacity"].ToString());
+                    cmd.Parameters.Add("p_section_id", HttpContext.Request.Form["btnCapacity"].ToString());
+                    cmd.ExecuteNonQuery();
+                    OnPostGetSectionInfo();
+                    OnPostGetStudentInfo();
+                    OnPostAccessInstructorList();
+                }
+                catch (OracleException ex)
+                {
+                    ViewData["showCapacityList"] = ex.Message;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+         */
     }
 }

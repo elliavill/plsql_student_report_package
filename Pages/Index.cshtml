@@ -19,10 +19,11 @@
    }
 
     table td:first-child {
-       width: 300px; /* example style */
+       width: 120px; /* example style */
     }
-    table td:nth-child(3){width:100px;}
-    table td:nth-child(4){width:150px;}
+      table td:nth-child(2), table td:nth-child(3), table td:nth-child(4) {
+         width: 150px;
+      }
 </style>
 @using (Html.BeginForm())
 {
@@ -56,20 +57,32 @@
          <div class="section-box">
             <table>
                <tr>
+                  <th>Product #</th>
                   <th>Product Name</th>
                   <th>Current Quantity</th>
                   <th>Price</th>
                   <th>Line Total</th>
                   <th>Order Total</th>
-                  <th>Update</th>
                </tr>
                <tr>
+                  <td>@row["P_CODE"]</td>
                   <td>@row["ProductName"]</td>
-                  <td>@row["Quantity"]  <button name="btnQuantity" asp-page-handler="UpdateQuantity" value="@row["p_code"]">Update</button></td>
+                  <td>
+                     <select name="quantityList">
+                        <option hidden selected disabled>@row["Quantity"]</option>
+                        <option value="10">0</option>
+                        <option value="10">1</option>
+                        <option value="10">2</option>
+                        <option value="10">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="25">25</option>
+                     </select>
+                     <button name="btnQuantity" asp-page-handler="UpdateQuantity" value="@row["line_number"]">Update</button>
+                  </td>
                   <td>@row["Price"]</td>
                   <td>@row["LineTotal"]</td>
                   <td>@row["OrderTotal"]</td>
-                  <td>this will show update button</td>
                   @*<td>
                      @if (ViewData["showStudentInformation"] != null)
                      {
