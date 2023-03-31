@@ -143,7 +143,7 @@ namespace Package.Pages
             }
         }
 
-        // Show quantity in the dropdown list
+        // Show capacity in the dropdown list
         public void OnPostUpdateQuantity()
         {
             using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
@@ -162,7 +162,7 @@ namespace Package.Pages
                     cmd.Parameters["invoiceNumber"].Value = Convert.ToInt32(selectedInvoice);
 
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
-                    cmd.Parameters["lineNumber"].Value = HttpContext.Request.Form["btnQuantity"];
+                    cmd.Parameters["lineNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
 
                     cmd.Parameters.Add("newQuantity", SqlDbType.Int);
                     cmd.Parameters["newQuantity"].Value = Convert.ToInt32(selectedCapacity);
@@ -172,7 +172,7 @@ namespace Package.Pages
                     OnPostGetOrdersForCustomer(selectedInvoice);
                     OnPostGetCustomersWithOrders(selectedCustomer);
                 }
-                catch (OracleException ex)
+                catch (SqlException ex)
                 {
                     ViewData["showCapacityList"] = ex.Message;
                 }
@@ -182,35 +182,5 @@ namespace Package.Pages
                 }
             }
         }
-
-        /*
-         *  public void OnPostUpdateCapacity()
-        {
-            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
-            {
-                con.Open();
-                OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project4.update_section_capacity";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.BindByName = true;
-                try
-                {
-                    cmd.Parameters.Add("p_capacity", HttpContext.Request.Form["updateCapacity"].ToString());
-                    cmd.Parameters.Add("p_section_id", HttpContext.Request.Form["btnCapacity"].ToString());
-                    cmd.ExecuteNonQuery();
-                    OnPostGetSectionInfo();
-                    OnPostGetStudentInfo();
-                    OnPostAccessInstructorList();
-                }
-                catch (OracleException ex)
-                {
-                    ViewData["showCapacityList"] = ex.Message;
-                }
-                finally
-                {
-                    con.Close();
-                }
-            }
-         */
     }
 }
