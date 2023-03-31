@@ -25,10 +25,10 @@
       <h1 class="display-4">Project 4: Advanced Project</h1>
       <h4>Aurel Villyani</h4>
    
-      @if (ViewData["showInstructorList"] != null)
+      @if (ViewData["showCustomerList"] != null)
       {
          <h4>Select an instructor: </h4>
-         <h4>@Html.DropDownList("instructorList", (IEnumerable<SelectListItem>)ViewData["showInstructorList"])</h4>
+         <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
       }
 
       <button asp-page-handler="GetSectionInfo">Get Instructor Info</button>
@@ -65,7 +65,9 @@
                                  // Compare if the section the students enrolled with the section that instructor in
                                  if (student["section_id"].ToString() == row["section_id"].ToString())
                                  {
-                                    <li>@student["student_name"]</li>
+                                    <ul>
+                                       <li>@student["student_name"]</li>
+                                    </ul>
                                  }
                               }
                         }

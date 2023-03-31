@@ -6,6 +6,7 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,48 +23,39 @@ namespace Package.Pages
 
         public void OnGet()
         {
-            OnPostAccessInstructorList();
+            OnPostGetCustomersWithOrders();
         }
 
         // Display the dropdown with the list of instructors
-        public void OnPostAccessInstructorList()
+        public void OnPostGetCustomersWithOrders()
         {
-            using (OracleConnection con = new OracleConnection("User ID=cs306_avillyani;Password=StudyDatabaseWithDrSparks;Data Source=CSORACLE"))
+            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
-                OracleCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project4.get_instructor_list";
+                SqlCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project5_GetCustomersWithOrders";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.BindByName = true;
                 try
                 {
-                    OracleParameter p_output = new OracleParameter();
-                    p_output.OracleDbType = OracleDbType.RefCursor;
-                    p_output.ParameterName = "p_output";
-                    p_output.Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add(p_output);
-
-                    OracleDataReader reader = cmd.ExecuteReader();
-                    List<SelectListItem> instructorList = new List<SelectListItem>();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    List<SelectListItem> customerList = new List<SelectListItem>();
                     // Get the instructor name and display it with thei id, salutation, first name, and last name
                     while (reader.Read())
                     {
-                        string instructorName = reader.GetInt32(0).ToString() + " " +
-                                                reader.GetString(1) + " " + 
-                                                reader.GetString(2) + " " +
-                                                reader.GetString(3);
-                        // Populate the existing instructor
-                        SelectListItem instructor = new SelectListItem();
-                        instructor.Text = instructorName;
-                        instructor.Value = reader.GetInt32(0).ToString();
-                        //instructor.Selected = true;
-                        instructorList.Add(instructor);
+                        string customerInfo = reader.GetInt32(0).ToString() + " " +
+                                              reader.GetString(1) + " " +
+                                              reader.GetString(2);
+                        SelectListItem customer = new SelectListItem();
+                        customer.Text = customerInfo;
+                        customer.Value = reader["CUS_CODE"].ToString();
+                        // customer.Selected = true
+                        customerList.Add(customer);
                     }
-                    ViewData["showInstructorList"] = instructorList;
+                    ViewData["showCustomerList"] = customerList;
                 }
                 catch (OracleException ex)
                 {
-                    ViewData["showInstructorList"] = ex.Message;
+                    ViewData["showCustomerList"] = ex.Message;
                 }
                 finally
                 {
@@ -112,7 +104,7 @@ namespace Package.Pages
                     // Display all information
                     ViewData["showInstructorInformation"] = ds.Tables[0];
                     OnPostGetStudentInfo();
-                    OnPostAccessInstructorList();
+                    OnPostGetCustomersWithOrders();
                     //OnPostShowCapacity();
                 }
                 catch (OracleException ex)
@@ -175,12 +167,12 @@ namespace Package.Pages
                 cmd.BindByName = true;
                 try
                 {
-                    cmd.Parameters.Add("p_capacity", HttpContext.Request.Form["updateCapacity"].ToString());
+                    cmd.Parameters.Add("  ", HttpContext.Request.Form["updateCapacity"].ToString());
                     cmd.Parameters.Add("p_section_id", HttpContext.Request.Form["btnCapacity"].ToString());
                     cmd.ExecuteNonQuery();
                     OnPostGetSectionInfo();
                     OnPostGetStudentInfo();
-                    OnPostAccessInstructorList();
+                    OnPostGetCustomersWithOrders();
                 }
                 catch (OracleException ex)
                 {
