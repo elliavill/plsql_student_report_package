@@ -83,35 +83,6 @@
                   <td>@row["Price"]</td>
                   <td>@row["LineTotal"]</td>
                   <td>@row["OrderTotal"]</td>
-                  @*<td>
-                     @if (ViewData["showStudentInformation"] != null)
-                     {
-                        var studentData = ViewData["showStudentInformation"] as System.Data.DataTable;
-
-                        @foreach (System.Data.DataRow student in studentData.Rows)
-                        {
-                           // Compare if the section the students enrolled with the section that instructor in
-                           if (student["section_id"].ToString() == row["section_id"].ToString())
-                           {
-                              <ul>
-                                 <li>@student["student_name"]</li>
-                              </ul>
-                           }
-                        }
-                     }
-                  </td>
-                  <td>@row["start_date_time"]</td>
-                  <td>@row["location"]</td>
-                  <td>
-                     <select name="updateCapacity">
-                        <option hidden selected disabled>@row["capacity"]</option>
-                        <option value="10">10</option>
-                        <option value="12">12</option>
-                        <option value="15">15</option>
-                        <option value="25">25</option>
-                     </select>
-                     <button name="btnCapacity" asp-page-handler="UpdateCapacity" value="@row["section_id"]">Update</button>
-                  </td>*@
                </tr>
             </table>
          </div>
