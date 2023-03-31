@@ -75,9 +75,9 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedValue = HttpContext.Request.Form["customerList"];
+                    string selectedInvoice = HttpContext.Request.Form["orderList"].ToString();
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = 1001; // INV_NUMBER
+                    cmd.Parameters["invoiceNumber"].Value = selectedInvoice; // INV_NUMBER
 
                     // Execute the stored procedure
                     SqlDataAdapter oda = new SqlDataAdapter(cmd);
@@ -85,12 +85,12 @@ namespace Package.Pages
                     oda.Fill(ds);
 
                     // Display all information
-                    ViewData["showInstructorInformation"] = ds.Tables[0];
-                    OnPostGetCustomersWithOrders(selectedValue);
+                    ViewData["showOrderDetails"] = ds.Tables[0];
+                    OnPostGetOrdersForCustomer(selectedInvoice);
                 }
                 catch (OracleException ex)
                 {
-                    ViewData["showInstructorInformation"] = ex.Message;
+                    ViewData["showOrderDetails"] = ex.Message;
                 }
                 finally
                 {
@@ -99,7 +99,7 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetOrdersForCustomer()
+        public void OnPostGetOrdersForCustomer(string selectedOrder)
         {
             using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true; TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
@@ -109,34 +109,27 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedValue = HttpContext.Request.Form["customerList"];
+                    string selectedCustomer = HttpContext.Request.Form["customerList"];
                     cmd.Parameters.Add("customerCode", SqlDbType.Int);
-                    cmd.Parameters["customerCode"].Value = selectedValue;
-
-                    // Execute the stored procedure
-                    //SqlDataAdapter oda = new SqlDataAdapter(cmd);
-                    //DataSet ds = new DataSet();
-                    //oda.Fill(ds);
+                    cmd.Parameters["customerCode"].Value = selectedCustomer;
 
                     SqlDataReader reader = cmd.ExecuteReader();
                     List<SelectListItem> orderList = new List<SelectListItem>();
                     while (reader.Read())
                     {
-                        string customerInfo = reader.GetInt32(0).ToString() + " " +
-                                              reader.GetInt32(1).ToString() + " " +
-                                              reader.GetDateTime(2).ToString();
+                        string orderInfo = reader.GetString(0) + " " +
+                                              reader.GetString(1);
                         SelectListItem order = new SelectListItem();
-                        order.Text = customerInfo;
-                        order.Value = reader["CUS_CODE"].ToString();
-                        if (order.Value == selectedValue)
+                        order.Text = orderInfo;
+                        order.Value = reader.GetString(0);
+                        if (order.Value == selectedOrder)
                         {
                             order.Selected = true;
                         }
                         orderList.Add(order);
                     }
-                    //ViewData["showCustomerList"] = customerList;
                     ViewData["showOrderForCustomer"] = orderList;
-                    OnPostGetCustomersWithOrders(selectedValue);
+                    OnPostGetCustomersWithOrders(selectedCustomer);
 
                 }
                 catch (OracleException ex)

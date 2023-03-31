@@ -27,34 +27,42 @@
    @if (ViewData["showCustomerList"] != null)
    {
       <h4>Select a Customer: </h4>
+      <h6 style="color: grey;">**This list only shows customers who have orders</h6>
       <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
    }
-
-   <br>
    <button asp-page-handler="GetOrdersForCustomer">Get Customer Info</button>
+   
+   <br /><br>
    @if (ViewData["showOrderForCustomer"] != null)
    {
-      <h4>Select an Order: </h4>
-      <h4>@Html.DropDownList("orderList", (IEnumerable<SelectListItem>)ViewData["showOrderForCustomer"])</h4>
-  
+      <h5>Select an order from the list: </h5>
+      <h5>@Html.DropDownList("orderList", (IEnumerable<SelectListItem>)ViewData["showOrderForCustomer"])</h5>
+      <button asp-page-handler="GetOrderDetails">Get Customer Info</button>
    }
-   @if (ViewData["test"] != null)
+   
+   <br />
+   @if (ViewData["showOrderDetails"] != null)
    {
-      var showData = ViewData["test"] as System.Data.DataTable;
-
+      var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
       @foreach (System.Data.DataRow row in showData.Rows)
       {
          <div class="section-box">
             <table>
                <tr>
-                  <th>Customer #</th>
-                  <th>Invoice Number</th>
-                  <th>Invoice Date</th>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Line Total</th>
+                  <th>Order Total</th>
+                  <th>Update</th>
                </tr>
                <tr>
-                  <td>@row["CUS_CODE"]</td>
-                  <td>@row["INV_NUMBER"]</td>
-                  <td>@row["INV_DATE"]</td>
+                  <td>@row["ProductName"]</td>
+                  <td>@row["Quantity"]</td>
+                  <td>@row["Price"]</td>
+                  <td>@row["LineTotal"]</td>
+                  <td>@row["OrderTotal"]</td>
+                  <td>this will show update button</td>
                   @*<td>
                      @if (ViewData["showStudentInformation"] != null)
                      {
