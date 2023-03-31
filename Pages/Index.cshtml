@@ -26,67 +26,89 @@
 </style>
 @using (Html.BeginForm())
 {
-   <div class="">
-      <h1 class="display-4">Project 5: SqlServer ft. ASP.NET</h1>
-      <h4>Aurel Villyani</h4>
-      <br /><hr>
-      @if (ViewData["showCustomerList"] != null)
-      {
-         <h4>Select a Customer: </h4>
-         <h6 style="color: grey;">**This list only shows customers who have placed their orders</h6>
-         <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
-      }
-      <button asp-page-handler="GetOrdersForCustomer">Get Customer Info</button>
-   
-      <br /><br>
-      @if (ViewData["showOrderForCustomer"] != null)
-      {
-         <hr><h4>Select an order from the list: </h4>
-         <h4>@Html.DropDownList("orderList", (IEnumerable<SelectListItem>)ViewData["showOrderForCustomer"])</h4>
-         <button asp-page-handler="GetOrderDetails">Get Customer Info</button>
-      }
+<div class="">
+   <h1 class="display-4">Project 5: SqlServer ft. ASP.NET</h1>
+   <h4>Aurel Villyani</h4>
+   <br /><hr>
+   @if (ViewData["showCustomerList"] != null)
+   {
+      <h4>Select a Customer: </h4>
+      <h6 style="color: grey;">**This list only shows customers who have placed their orders</h6>
+      <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
+   }
+   <button asp-page-handler="GetOrdersForCustomer">Get Customer Info</button>
 
-      <br /><br>
-      @if (ViewData["showOrderDetails"] != null)
+   <br>
+   @if (ViewData["showOrderForCustomer"] != null)
+   {
+      <hr><h4>Select an order from the list: </h4>
+      var showData = ViewData["showOrderForCustomer"] as System.Data.DataTable;
+      <div class="section-box">
+         <table>
+            <tr>
+               <th>Customer Name</th>
+               <th>Invoice #</th>
+               <th>Invoice Date</th>
+               <th>Total Item Ordered</th>
+               <th>Customer Code</th>
+               <th></th>
+            </tr>
+            @foreach (System.Data.DataRow row in showData.Rows)
+            {
+               <tr>
+                  <td>@row["CustomerName"]</td>
+                  <td>@row["InvoiceNumber"]</td>
+                  <td>@row["InvoiceDate"]</td>
+                  <td>@row["TotalItemOrdered"]</td>
+                  <td>@row["CUS_CODE"]</td>
+                  <td><button asp-page-handler="GetOrderDetails">Details</button></td>
+               </tr>
+            }
+         </table>
+      </div>
+   }
+
+   <br />
+   @if (ViewData["showOrderDetails"] != null)
+   {
+      var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
+      <hr><h3>List of the item(s)</h3>
+      @foreach (System.Data.DataRow row in showData.Rows)
       {
-         var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
-         <hr><h3>List of the item(s)</h3>
-         @foreach (System.Data.DataRow row in showData.Rows)
-         {
-            <div class="section-box">
-               <table>
-                  <tr>
-                     <th>Product #</th>
-                     <th>Product Name</th>
-                     <th>Current Quantity</th>
-                     <th>Price</th>
-                    <th>Line Total</th>
-                     <th>Order Total</th>
-                  </tr>
-                  <tr>
-                     <td>@row["P_CODE"]</td>
-                     <td>@row["ProductName"]</td>
-                     <td>
-                        <select name="quantityList">
-                           <option hidden selected disabled>@row["Quantity"]</option>
-                           <option value="0">0</option>
-                           <option value="1">1</option>
-                           <option value="2">2</option>
-                           <option value="3">3</option>
-                           <option value="5">5</option>
-                           <option value="10">10</option>
-                           <option value="15">15</option>
-                           <option value="25">25</option>
-                        </select>
-                        <button name="btnQuantity" asp-page-handler="UpdateQuantity" value="@row["line_number"]">Update</button>
-                     </td>
-                     <td>@row["Price"]</td>
-                     <td>@row["LineTotal"]</td>
-                     <td>@row["OrderTotal"]</td>
-                  </tr>
-               </table>
-           </div>
-         }
+         <div class="section-box">
+            <table>
+               <tr>
+                  <th>Product #</th>
+                  <th>Product Name</th>
+                  <th>Current Quantity</th>
+                  <th>Price</th>
+                  <th>Line Total</th>
+                  <th>Order Total</th>
+               </tr>
+               <tr>
+                  <td>@row["P_CODE"]</td>
+                  <td>@row["ProductName"]</td>
+                  <td>
+                     <select name="quantityList">
+                        <option hidden selected disabled>@row["Quantity"]</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="25">25</option>
+                     </select>
+                     <button name="btnQuantity" asp-page-handler="UpdateQuantity" value="@row["line_number"]">Update</button>
+                  </td>
+                  <td>@row["Price"]</td>
+                  <td>@row["LineTotal"]</td>
+                  <td>@row["OrderTotal"]</td>
+               </tr>
+            </table>
+         </div>
       }
-   </div>
+   }
+</div>
 }

@@ -113,22 +113,13 @@ namespace Package.Pages
                     cmd.Parameters.Add("customerCode", SqlDbType.Int);
                     cmd.Parameters["customerCode"].Value = selectedCustomer;
 
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    List<SelectListItem> orderList = new List<SelectListItem>();
-                    while (reader.Read())
-                    {
-                        string orderInfo = reader.GetString(0) + " " +
-                                              reader.GetString(1);
-                        SelectListItem order = new SelectListItem();
-                        order.Text = orderInfo;
-                        order.Value = reader["INV_NUMBER"].ToString();
-                        if (order.Value == selectedOrder)
-                        {
-                            order.Selected = true;
-                        }
-                        orderList.Add(order);
-                    }
-                    ViewData["showOrderForCustomer"] = orderList;
+                    // Execute the stored procedure
+                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
+                    DataSet ds = new DataSet();
+                    oda.Fill(ds);
+
+                    // Display all information
+                    ViewData["showOrderForCustomer"] = ds.Tables[0];
                     OnPostGetCustomersWithOrders(selectedCustomer);
 
                 }
