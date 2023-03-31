@@ -28,7 +28,7 @@ namespace Package.Pages
 
         public void OnPostGetCustomersWithOrders(string selectedValue)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -67,7 +67,7 @@ namespace Package.Pages
 
         public void OnPostGetOrderDetails()
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -101,7 +101,7 @@ namespace Package.Pages
 
         public void OnPostGetOrdersForCustomer()
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=AURELIAVILL9010;Initial Catalog=cs306_villyani;Integrated Security=true; TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -114,13 +114,30 @@ namespace Package.Pages
                     cmd.Parameters["customerCode"].Value = selectedValue;
 
                     // Execute the stored procedure
-                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
-                    DataSet ds = new DataSet();
-                    oda.Fill(ds);
+                    //SqlDataAdapter oda = new SqlDataAdapter(cmd);
+                    //DataSet ds = new DataSet();
+                    //oda.Fill(ds);
 
-                    // Display all information
-                    ViewData["showOrderForCustomer"] = ds.Tables[0];
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    List<SelectListItem> orderList = new List<SelectListItem>();
+                    while (reader.Read())
+                    {
+                        string customerInfo = reader.GetInt32(0).ToString() + " " +
+                                              reader.GetInt32(1).ToString() + " " +
+                                              reader.GetDateTime(2).ToString();
+                        SelectListItem order = new SelectListItem();
+                        order.Text = customerInfo;
+                        order.Value = reader["CUS_CODE"].ToString();
+                        if (order.Value == selectedValue)
+                        {
+                            order.Selected = true;
+                        }
+                        orderList.Add(order);
+                    }
+                    //ViewData["showCustomerList"] = customerList;
+                    ViewData["showOrderForCustomer"] = orderList;
                     OnPostGetCustomersWithOrders(selectedValue);
+
                 }
                 catch (OracleException ex)
                 {

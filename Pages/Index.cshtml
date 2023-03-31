@@ -24,17 +24,23 @@
 <div class="">
    <h1 class="display-4">Project 5: SqlServer ft. ASP.NET</h1>
    <h4>Aurel Villyani</h4>
-   <button asp-page-handler="GetCustomersWithOrders">Get Customer List</button>
    @if (ViewData["showCustomerList"] != null)
    {
       <h4>Select a Customer: </h4>
       <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
    }
 
+   <br>
    <button asp-page-handler="GetOrdersForCustomer">Get Customer Info</button>
    @if (ViewData["showOrderForCustomer"] != null)
    {
-      var showData = ViewData["showOrderForCustomer"] as System.Data.DataTable;
+      <h4>Select an Order: </h4>
+      <h4>@Html.DropDownList("orderList", (IEnumerable<SelectListItem>)ViewData["showOrderForCustomer"])</h4>
+  
+   }
+   @if (ViewData["test"] != null)
+   {
+      var showData = ViewData["test"] as System.Data.DataTable;
 
       @foreach (System.Data.DataRow row in showData.Rows)
       {
