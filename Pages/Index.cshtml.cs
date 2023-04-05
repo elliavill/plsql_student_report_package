@@ -65,39 +65,7 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetOrderDetails()
-        {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
-            {
-                con.Open();
-                SqlCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project5_GetOrderDetails";
-                cmd.CommandType = CommandType.StoredProcedure;
-                try
-                {
-                    string selectedInvoice = HttpContext.Request.Form["orderList"];
-                    cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnOrder"].ToString();
-                    // Execute the stored procedure
-                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
-                    DataSet ds = new DataSet();
-                    oda.Fill(ds);
-
-                    // Display all information
-                    ViewData["showOrderDetails"] = ds.Tables[0];
-                    OnPostGetOrdersForCustomer(selectedInvoice);
-                }
-                catch (OracleException ex)
-                {
-                    ViewData["showOrderDetails"] = ex.Message;
-                }
-                finally
-                {
-                    con.Close();
-                }
-            }
-        }
-
+      
         public void OnPostGetOrdersForCustomer(string selectedOrder)
         {
             using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
@@ -109,7 +77,7 @@ namespace Package.Pages
                 try
                 {
                     string selectedCustomer = HttpContext.Request.Form["customerList"];
-                    cmd.Parameters.Add("customerCode", SqlDbType.Int);
+                    cmd.Parameters.Add("customerCode", SqlDbType.VarChar);
                     cmd.Parameters["customerCode"].Value = selectedCustomer;
 
                     // Execute the stored procedure
@@ -132,6 +100,40 @@ namespace Package.Pages
             }
         }
 
+        public void OnPostGetOrderDetails()
+        {
+            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            {
+                con.Open();
+                SqlCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project5_GetOrderDetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                try
+                {
+                    string selectedInvoice = HttpContext.Request.Form["orderList"];
+                    cmd.Parameters.Add("invoiceNumber", SqlDbType.VarChar);
+                    cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnOrder"].ToString();
+                    // Execute the stored procedure
+                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
+                    DataSet ds = new DataSet();
+                    oda.Fill(ds);
+
+                    // Display all information
+                    ViewData["showOrderDetails"] = ds.Tables[0];
+                    OnPostGetOrdersForCustomer(selectedInvoice);
+                }
+                catch (OracleException ex)
+                {
+                    ViewData["showOrderDetails"] = ex.Message;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+
+
         // Show capacity in the dropdown list
         public void OnPostUpdateQuantity()
         {
@@ -147,14 +149,14 @@ namespace Package.Pages
                     int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
                     int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
 
-                    cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
+                    cmd.Parameters.Add("invoiceNumber", SqlDbType.VarChar);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
 
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
                     cmd.Parameters["lineNumber"].Value = int.Parse("3");
 
                     cmd.Parameters.Add("newQuantity", SqlDbType.Decimal);
-                    cmd.Parameters["newQuantity"].Value = 15.00;
+                    cmd.Parameters["newQuantity"].Value = 10.00;
 
                     cmd.ExecuteNonQuery();
                     OnPostGetOrderDetails();
