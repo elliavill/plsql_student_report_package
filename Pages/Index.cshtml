@@ -76,53 +76,48 @@
             </div>
         }
 
-        @if (ViewData["showOrderDetails"] != null)
-        {
-            var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
-            if (showData != null)
-            {
-                <hr>
-
-                <h3>List of the item(s)</h3>
-                @foreach (System.Data.DataRow row in showData.Rows)
-                {
-                    <div class="section-box">
-                        <table>
-                            <tr>
-                                <th>Product #</th>
-                                <th>Product Name</th>
-                                <th>Current Quantity</th>
-                                <th>Price</th>
-                                <th>Line Total</th>
-                                <th>Order Total</th>
-                            </tr>
-                            <tr>
-                                <input type="hidden" value="@row["line_number"]">
-                                <td>@row["P_CODE"]</td>
-                                <td>@row["ProductName"]</td>
-                                <td>
-                                    <select name="quantityList">
-                                        <option value="@row["Quantity"]" selected>@row["Quantity"]</option>
-                                        @for (int quantity = 0; quantity <= 50; quantity += 5)
-                                        {
-                                            if (quantity != Convert.ToInt32(row["Quantity"]))
-                                            {
-                                                <option value="@quantity">@quantity</option>
-                                            }
-                                        }
-                                    </select>
-                                    <button name="btnQuantity" asp-page-handler="UpdateQuantity" asp-route-invoiceNumber="@row["invoice_number"]">Update</button>
-
-                                </td>
-                                <td>@row["Price"]</td>
-                                <td>@row["LineTotal"]</td>
-                                <td>@row["OrderTotal"]</td>
-                            </tr>
-                        </table>
-                    </div>
-                }
-            }
-
-        }
-    </div>
+   @if (ViewData["showOrderDetails"] != null)
+   {
+      var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
+      <hr><h3>List of the item(s)</h3>
+      @foreach (System.Data.DataRow row in showData.Rows)
+      {
+         <div class="section-box">
+            <table>
+               <tr>
+                  <th>Product #</th>
+                  <th>Product Name</th>
+                  <th>Current Quantity</th>
+                  <th>Price</th>
+                  <th>Line Total</th>
+                  <th>Order Total</th>
+               </tr>
+               <tr>
+                  
+                  <td>@row["P_CODE"]
+                     <input type="text" hidden name="lineNumber" value="@row["line_number"]" /></td>
+                  <td>@row["ProductName"]</td>
+                  <td>
+                     <select name="quantityList">
+                        <option hidden selected disabled>@row["Quantity"]</option>
+                        <option value="0.00">0</option>
+                        <option value="1.00">1</option>
+                        <option value="2.00">2</option>
+                        <option value="3.00">3</option>
+                        <option value="5.00">5</option>
+                        <option value="10.00">10</option>
+                        <option value="15.00">15</option>
+                        <option value="25.00">25</option>
+                     </select>
+                     <button name="btnQuantity" asp-page-handler="UpdateQuantity" value="@row["INV_NUMBER"]">Update</button>
+                  </td>
+                  <td>@row["Price"]</td>
+                  <td>@row["LineTotal"]</td>
+                  <td>@row["OrderTotal"]</td>
+               </tr>
+            </table>
+         </div>
+      }
+   }
+</div>
 }
