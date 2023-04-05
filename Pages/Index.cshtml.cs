@@ -145,20 +145,21 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    decimal selectedCapacity = Convert.ToDecimal(HttpContext.Request.Form["quantityList"]);
+                    decimal selectedCapacity = decimal.Parse(HttpContext.Request.Form["quantityList"]);
                     int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
                     int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
 
-                    cmd.Parameters.Add("invoiceNumber", SqlDbType.VarChar);
+                    cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
 
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
-                    cmd.Parameters["lineNumber"].Value = int.Parse("3");
+                    cmd.Parameters["lineNumber"].Value = int.Parse("1");
 
                     cmd.Parameters.Add("newQuantity", SqlDbType.Decimal);
-                    cmd.Parameters["newQuantity"].Value = 10.00;
+                    cmd.Parameters["newQuantity"].Value = decimal.Parse(HttpContext.Request.Form["quantityList"].ToString());
 
                     cmd.ExecuteNonQuery();
+                    OnPostGetOrderDetails();
                     OnPostGetOrderDetails();
                 }
                 catch (SqlException ex)
