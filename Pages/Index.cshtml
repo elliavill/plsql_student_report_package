@@ -80,6 +80,7 @@
    {
       var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
       <hr><h3>List of the item(s)</h3>
+      <form method="post">
       @foreach (System.Data.DataRow row in showData.Rows)
       {
          <div class="section-box">
@@ -117,6 +118,7 @@
             </table>
          </div>
       }
+      </form>
    }
 </div>
 }

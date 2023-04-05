@@ -28,7 +28,7 @@ namespace Package.Pages
 
         public void OnPostGetCustomersWithOrders(string selectedValue)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -68,7 +68,7 @@ namespace Package.Pages
       
         public void OnPostGetOrdersForCustomer(string selectedOrder)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -102,7 +102,7 @@ namespace Package.Pages
 
         public void OnPostGetOrderDetails()
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -137,7 +137,7 @@ namespace Package.Pages
         // Show capacity in the dropdown list
         public void OnPostUpdateQuantity()
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -153,7 +153,12 @@ namespace Package.Pages
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
 
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
-                    cmd.Parameters["lineNumber"].Value = int.Parse("1");
+                    string lineNumber = HttpContext.Request.Form["lineNumber"];
+                    string[] lineNumbers = lineNumber.Split(',');
+                    for (int row = 0; row < lineNumbers.Length; row++)
+                    {
+                        cmd.Parameters["lineNumber"].Value = int.Parse(lineNumbers[row]);
+                    }
 
                     cmd.Parameters.Add("newQuantity", SqlDbType.Decimal);
                     cmd.Parameters["newQuantity"].Value = decimal.Parse(HttpContext.Request.Form["quantityList"].ToString());
