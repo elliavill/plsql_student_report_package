@@ -100,7 +100,7 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetOrderDetails(string getInvoiceNumber)
+        public void OnPostGetOrderDetails()
         {
             using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
@@ -113,7 +113,7 @@ namespace Package.Pages
                     string selectedInvoice = HttpContext.Request.Form["orderList"];
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.VarChar);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnOrder"].ToString();
-
+                    // Execute the stored procedure
                     SqlDataAdapter oda = new SqlDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
@@ -135,9 +135,9 @@ namespace Package.Pages
 
 
         // Show capacity in the dropdown list
-        public void OnPostUpdateQuantity()
+        public void OnPostUpdateQuantity(string lineNumberChange)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;"))
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -145,7 +145,9 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedInvoice = HttpContext.Request.Form["btnQuantity"].ToString();
+                    decimal selectedCapacity = decimal.Parse(HttpContext.Request.Form["quantityList"]);
+                    int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
+                    int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
 
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
@@ -153,17 +155,17 @@ namespace Package.Pages
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
                     string lineNumber = HttpContext.Request.Form["lineNumber"];
                     string[] lineNumbers = lineNumber.Split(',');
-                    for (int row = 0; row < lineNumbers.Length; row++)
+                    for (int i = 0; i < lineNumbers.Length; i++)
                     {
-                        cmd.Parameters["lineNumber"].Value = int.Parse(lineNumbers[row]);
+                        string lineNum = lineNumbers[i];
+                        if(lineNum == lineNumberChange)
+                           cmd.Parameters["lineNumber"].Value = int.Parse(lineNum); 
                     }
 
                     cmd.Parameters.Add("newQuantity", SqlDbType.Decimal);
                     cmd.Parameters["newQuantity"].Value = decimal.Parse(HttpContext.Request.Form["quantityList"].ToString());
-                    
-                    OnPostGetOrderDetails(selectedInvoice);
                     cmd.ExecuteNonQuery();
-                    
+                    OnPostGetOrderDetails();
                 }
                 catch (SqlException ex)
                 {
@@ -175,5 +177,6 @@ namespace Package.Pages
                 }
             }
         }
+
     }
 }
