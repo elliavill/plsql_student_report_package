@@ -85,22 +85,23 @@
                   <th>Order Total</th>
                </tr>
                <tr>
-                  <td>@row["P_CODE"]</td>
+                  
+                  <td>@row["P_CODE"]
+                     <input type="text" hidden name="lineNumber" value="@row["line_number"]" /></td>
                   <td>@row["ProductName"]</td>
                   <td>
-                        <select name="quantityList">
-                           <option hidden selected disabled>@row["Quantity"]</option>
-                           <option value="0">0</option>
-                           <option value="1">1</option>
-                           <option value="2">2</option>
-                           <option value="3">3</option>
-                           <option value="5">5</option>
-                           <option value="10">10</option>
-                           <option value="15">15</option>
-                           <option value="25">25</option>
-                        </select>
-                        <button name="btnQuantity" asp-page-handler="UpdateQuantity" asp-route-lineNumber="@row["line_number"]">Update</button>
-
+                     <select name="quantityList">
+                        <option hidden selected disabled>@row["Quantity"]</option>
+                        <option value="0.00">0</option>
+                        <option value="1.00">1</option>
+                        <option value="2.00">2</option>
+                        <option value="3.00">3</option>
+                        <option value="5.00">5</option>
+                        <option value="10.00">10</option>
+                        <option value="15.00">15</option>
+                        <option value="25.00">25</option>
+                     </select>
+                     <button name="btnQuantity" asp-page-handler="UpdateQuantity" value="@row["INV_NUMBER"]">Update</button>
                   </td>
                   <td>@row["Price"]</td>
                   <td>@row["LineTotal"]</td>

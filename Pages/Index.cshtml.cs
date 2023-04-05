@@ -133,7 +133,7 @@ namespace Package.Pages
         }
 
         // Show capacity in the dropdown list
-        public void OnPostUpdateQuantity(int quantity)
+        public void OnPostUpdateQuantity()
         {
             using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
@@ -143,18 +143,19 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedCapacity = HttpContext.Request.Form["quantityList"].ToString();
+                    decimal selectedCapacity = Convert.ToDecimal(HttpContext.Request.Form["quantityList"]);
                     int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
-                    int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);    
+                    int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
+                    string getLineNumber = HttpContext.Request.Form["lineNumber"].ToString();
 
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = quantity;
+                    cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
 
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
-                    cmd.Parameters["lineNumber"].Value = HttpContext.Request.Form["btnQuantity"];
+                    cmd.Parameters["lineNumber"].Value = 3;
 
-                    cmd.Parameters.Add("newQuantity", SqlDbType.Text);
-                    cmd.Parameters["newQuantity"].Value = Convert.ToInt32(selectedCapacity);
+                    cmd.Parameters.Add("newQuantity", SqlDbType.Decimal);
+                    cmd.Parameters["newQuantity"].Value = 8.00;
 
                     cmd.ExecuteNonQuery();
                     OnPostGetOrderDetails();
