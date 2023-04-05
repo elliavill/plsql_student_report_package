@@ -23,12 +23,12 @@ namespace Package.Pages
 
         public void OnGet()
         {
-            OnPostGetCustomersWithOrders(null);
+            OnPostGetCustomersWithOrders(0);
         }
 
-        public void OnPostGetCustomersWithOrders(string selectedValue)
+        public void OnPostGetCustomersWithOrders(int selectedValue)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -46,7 +46,7 @@ namespace Package.Pages
                         SelectListItem customer = new SelectListItem();
                         customer.Text = customerInfo;
                         customer.Value = reader["CUS_CODE"].ToString();
-                        if (customer.Value == selectedValue)
+                        if (customer.Value == selectedValue.ToString())
                         {
                             customer.Selected = true;
                         }
@@ -67,7 +67,7 @@ namespace Package.Pages
 
         public void OnPostGetOrderDetails()
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -76,16 +76,24 @@ namespace Package.Pages
                 try
                 {
                     string selectedInvoice = HttpContext.Request.Form["orderList"];
-                    cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnOrder"].ToString();
-                    // Execute the stored procedure
-                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
-                    DataSet ds = new DataSet();
-                    oda.Fill(ds);
+                    if (Int32.TryParse(HttpContext.Request.Form["btnOrder"].ToString(), out int invoiceNumber))
+                    {
+                        cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
+                        cmd.Parameters["invoiceNumber"].Value = invoiceNumber;
 
-                    // Display all information
-                    ViewData["showOrderDetails"] = ds.Tables[0];
-                    OnPostGetOrdersForCustomer(selectedInvoice);
+                        // Execute the stored procedure
+                        SqlDataAdapter oda = new SqlDataAdapter(cmd);
+                        DataSet ds = new DataSet();
+                        oda.Fill(ds);
+
+                        // Display all information
+                        ViewData["showOrderDetails"] = ds.Tables[0];
+                        OnPostGetOrdersForCustomer(selectedInvoice);
+                    }
+                    else
+                    {
+                        ViewData["showOrderDetails"] = "Invalid invoice number";
+                    }
                 }
                 catch (OracleException ex)
                 {
@@ -100,7 +108,7 @@ namespace Package.Pages
 
         public void OnPostGetOrdersForCustomer(string selectedOrder)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
@@ -108,7 +116,7 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedCustomer = HttpContext.Request.Form["customerList"];
+                    int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
                     cmd.Parameters.Add("customerCode", SqlDbType.Int);
                     cmd.Parameters["customerCode"].Value = selectedCustomer;
 
@@ -132,42 +140,49 @@ namespace Package.Pages
             }
         }
 
-        // Show capacity in the dropdown list
-        public void OnPostUpdateQuantity(int quantity)
+        public void OnPostUpdateQuantity(int quantity, int lineNumber)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;"))
             {
                 con.Open();
                 SqlCommand cmd = con.CreateCommand();
                 cmd.CommandText = @"project5_UpdateOrderLine";
                 cmd.CommandType = CommandType.StoredProcedure;
-                try
-                {
-                    string selectedCapacity = HttpContext.Request.Form["quantityList"].ToString();
-                    int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
-                    int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);    
 
+                if (int.TryParse(Request.Form["invoiceNumber"], out int invoiceNumber))
+                {
+                    int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
-                    cmd.Parameters["invoiceNumber"].Value = quantity;
+                    cmd.Parameters["invoiceNumber"].Value = invoiceNumber;
 
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
-                    cmd.Parameters["lineNumber"].Value = HttpContext.Request.Form["btnQuantity"];
+                    cmd.Parameters["lineNumber"].Value = lineNumber;
 
-                    cmd.Parameters.Add("newQuantity", SqlDbType.Text);
-                    cmd.Parameters["newQuantity"].Value = Convert.ToInt32(selectedCapacity);
+                    cmd.Parameters.Add("newQuantity", SqlDbType.Int);
+                    cmd.Parameters["newQuantity"].Value = quantity;
 
-                    cmd.ExecuteNonQuery();
-                    OnPostGetOrderDetails();
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+
+                        // Reload the order details and customer orders tables
+                        OnPostGetCustomersWithOrders(selectedCustomer);
+                        OnPostGetOrderDetails();
+                        OnPostGetOrdersForCustomer(invoiceNumber.ToString());
+                    }
+                    catch (SqlException ex)
+                    {
+                        // Handle the exception
+                        ViewData["showOrderDetails"] = ex.Message;
+                    }
                 }
-                catch (SqlException ex)
+                else
                 {
-                    ViewData["showCapacityList"] = ex.Message;
-                }
-                finally
-                {
-                    con.Close();
+                    // Handle the case where the "invoiceNumber" value is not a valid integer
+                    ViewData["showOrderDetails"] = "Invalid invoice number.";
                 }
             }
         }
+
     }
 }
