@@ -80,7 +80,7 @@
    {
       var showData = ViewData["showOrderDetails"] as System.Data.DataTable;
       <hr><h3>List of the item(s)</h3>
-      <form method="post">
+      <h6 style="color: grey;">**The item purchased will be removed after change the quantity to 0.00</h6>
       @foreach (System.Data.DataRow row in showData.Rows)
       {
          <div class="section-box">
@@ -118,7 +118,6 @@
             </table>
          </div>
       }
-      </form>
    }
 </div>
 }

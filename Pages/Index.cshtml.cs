@@ -100,7 +100,7 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetOrderDetails()
+        public void OnPostGetOrderDetails(string getInvoiceNumber)
         {
             using (SqlConnection con = new SqlConnection("Data Source=aureliavill9010;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
             {
@@ -113,7 +113,7 @@ namespace Package.Pages
                     string selectedInvoice = HttpContext.Request.Form["orderList"];
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.VarChar);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnOrder"].ToString();
-                    // Execute the stored procedure
+
                     SqlDataAdapter oda = new SqlDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
@@ -145,9 +145,7 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    decimal selectedCapacity = decimal.Parse(HttpContext.Request.Form["quantityList"]);
-                    int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
-                    int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
+                    string selectedInvoice = HttpContext.Request.Form["btnQuantity"].ToString();
 
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
@@ -162,10 +160,10 @@ namespace Package.Pages
 
                     cmd.Parameters.Add("newQuantity", SqlDbType.Decimal);
                     cmd.Parameters["newQuantity"].Value = decimal.Parse(HttpContext.Request.Form["quantityList"].ToString());
-
+                    
+                    OnPostGetOrderDetails(selectedInvoice);
                     cmd.ExecuteNonQuery();
-                    OnPostGetOrderDetails();
-                    OnPostGetOrderDetails();
+                    
                 }
                 catch (SqlException ex)
                 {
