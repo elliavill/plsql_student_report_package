@@ -146,16 +146,15 @@ namespace Package.Pages
                     decimal selectedCapacity = Convert.ToDecimal(HttpContext.Request.Form["quantityList"]);
                     int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
                     int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
-                    string getLineNumber = HttpContext.Request.Form["lineNumber"].ToString();
 
                     cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
 
                     cmd.Parameters.Add("lineNumber", SqlDbType.Int);
-                    cmd.Parameters["lineNumber"].Value = 3;
+                    cmd.Parameters["lineNumber"].Value = int.Parse("3");
 
                     cmd.Parameters.Add("newQuantity", SqlDbType.Decimal);
-                    cmd.Parameters["newQuantity"].Value = 8.00;
+                    cmd.Parameters["newQuantity"].Value = 15.00;
 
                     cmd.ExecuteNonQuery();
                     OnPostGetOrderDetails();

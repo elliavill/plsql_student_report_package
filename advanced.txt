@@ -1,42 +1,30 @@
 USE [CS306_Villyani]
 GO
-/****** Object:  StoredProcedure [dbo].[project5_UpdateOrderLine]    Script Date: 3/31/2023 6:02:28 PM ******/
+/****** Object:  StoredProcedure [dbo].[project5_GetCustomersWithOrders]    Script Date: 4/4/2023 8:15:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 -- =============================================
--- Author:		Aurel Villyani
--- Create date: April 6, 2023
--- Description:	Update item quantity and remove the item if the quantity is 0
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
 -- =============================================
-ALTER PROCEDURE [dbo].[project5_UpdateOrderLine]
-    (@invoiceNumber INT,
-     @lineNumber INT,
-     @newQuantity INT)
+ALTER PROCEDURE [dbo].[project5_GetCustomersWithOrders]
 AS
 BEGIN
-    IF @newQuantity = 0
-    BEGIN
-        -- Remove product from order
-        DELETE FROM Line
-        WHERE INV_NUMBER = @invoiceNumber AND LINE_NUMBER = @lineNumber
-    END
-    ELSE
-    BEGIN
-        -- Update product quantity
-        UPDATE Line
-        SET LINE_UNITS = @newQuantity
-        WHERE INV_NUMBER = @invoiceNumber AND LINE_NUMBER = @lineNumber
-    END
+    SELECT DISTINCT C.CUS_CODE,  C.CUS_FNAME, C.CUS_LNAME
+    FROM Customer C
+    JOIN Invoice I ON C.CUS_CODE = I.CUS_CODE
+    ORDER BY C.CUS_CODE
 END
 
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 USE [CS306_Villyani]
 GO
-/****** Object:  StoredProcedure [dbo].[project5_GetOrderDetails]    Script Date: 3/31/2023 4:42:36 PM ******/
+/****** Object:  StoredProcedure [dbo].[project5_GetOrderDetails]    Script Date: 4/4/2023 8:16:13 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -49,11 +37,12 @@ GO
 ALTER PROCEDURE [dbo].[project5_GetOrderDetails](@invoiceNumber INT)
 AS
 BEGIN
-    SELECT P.P_DESCRIPT AS ProductName, 
+    SELECT L.LINE_NUMBER,
+	       P.P_DESCRIPT AS ProductName, 
 	       L.LINE_UNITS AS Quantity, 
 		   L.LINE_PRICE AS Price,
-           CONVERT(DECIMAL(5, 2),(L.LINE_UNITS * L.LINE_PRICE)) AS LineTotal,
-           (SELECT CONVERT(DECIMAL(5, 2), SUM(L2.LINE_UNITS * L2.LINE_PRICE))
+           CONVERT(DECIMAL(9, 2),(L.LINE_UNITS * L.LINE_PRICE)) AS LineTotal,
+           (SELECT CONVERT(DECIMAL(9, 2), SUM(L2.LINE_UNITS * L2.LINE_PRICE))
 		    FROM Line L2 
 		    WHERE L2.INV_NUMBER = L.INV_NUMBER) AS OrderTotal,
 		   L.INV_NUMBER, P.P_CODE, L.LINE_NUMBER
@@ -64,12 +53,11 @@ END
 
 
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 USE [CS306_Villyani]
 GO
-/****** Object:  StoredProcedure [dbo].[project5_GetOrdersForCustomer]    Script Date: 3/31/2023 6:02:36 PM ******/
+/****** Object:  StoredProcedure [dbo].[project5_GetOrdersForCustomer]    Script Date: 4/4/2023 8:16:24 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -96,29 +84,41 @@ BEGIN
 	WHERE I.CUS_CODE = @customerCode
 	GROUP BY C.CUS_FNAME, C.CUS_LNAME, I.INV_NUMBER, I.INV_DATE, I.CUS_CODE
 	ORDER BY I.INV_NUMBER ASC
-END   
+END
 
->>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 
 
 USE [CS306_Villyani]
 GO
-/****** Object:  StoredProcedure [dbo].[project5_GetCustomersWithOrders]    Script Date: 3/31/2023 6:02:48 PM ******/
+/****** Object:  StoredProcedure [dbo].[project5_UpdateOrderLine]    Script Date: 4/4/2023 8:16:30 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 -- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
+-- Author:		Aurel Villyani
+-- Create date: April 6, 2023
+-- Description:	Update item quantity and remove the item if the quantity is 0
 -- =============================================
-ALTER PROCEDURE [dbo].[project5_GetCustomersWithOrders]
+ALTER PROCEDURE [dbo].[project5_UpdateOrderLine]
+    (@invoiceNumber INT,
+     @lineNumber INT,
+     @newQuantity NUMERIC(2,0))
 AS
 BEGIN
-    SELECT DISTINCT C.CUS_CODE,  C.CUS_FNAME, C.CUS_LNAME
-    FROM Customer C
-    JOIN Invoice I ON C.CUS_CODE = I.CUS_CODE
-    ORDER BY C.CUS_CODE
+    IF @newQuantity = 0
+    BEGIN
+        -- Remove product from order
+        DELETE FROM Line
+        WHERE INV_NUMBER = @invoiceNumber AND LINE_NUMBER = @lineNumber
+    END
+    ELSE
+    BEGIN
+        -- Update product quantity
+        UPDATE Line
+        SET LINE_UNITS = @newQuantity
+        WHERE INV_NUMBER = @invoiceNumber AND LINE_NUMBER = @lineNumber
+    END
 END
