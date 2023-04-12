@@ -6,7 +6,7 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,15 +28,15 @@ namespace Package.Pages
 
         public void OnPostGetCustomersWithOrders(string selectedValue)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_avillyani;user id=CS306_Villyani;password=pcc138772")) 
             {
                 con.Open();
-                SqlCommand cmd = con.CreateCommand();
+                MySqlCommand cmd = con.CreateCommand();
                 cmd.CommandText = @"project5_GetCustomersWithOrders";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     List<SelectListItem> customerList = new List<SelectListItem>();
                     while (reader.Read())
                     {
@@ -54,7 +54,7 @@ namespace Package.Pages
                     }
                     ViewData["showCustomerList"] = customerList;
                 }
-                catch (SqlException ex)
+                catch (MySqlException ex)
                 {
                     ViewData["showCustomerList"] = ex.Message;
                 }
@@ -68,20 +68,20 @@ namespace Package.Pages
       
         public void OnPostGetOrdersForCustomer(string selectedOrder)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_avillyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
-                SqlCommand cmd = con.CreateCommand();
+                MySqlCommand cmd = con.CreateCommand();
                 cmd.CommandText = @"project5_GetOrdersForCustomer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
                     string selectedCustomer = HttpContext.Request.Form["customerList"];
-                    cmd.Parameters.Add("customerCode", SqlDbType.VarChar);
+                    cmd.Parameters.Add("customerCode", MySqlDbType.VarChar);
                     cmd.Parameters["customerCode"].Value = selectedCustomer;
 
                     // Execute the stored procedure
-                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
+                    MySqlDataAdapter oda = new MySqlDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
 
@@ -102,19 +102,19 @@ namespace Package.Pages
 
         public void OnPostGetOrderDetails()
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;")) //catalog represent inenr part, once connected to server
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_avillyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
-                SqlCommand cmd = con.CreateCommand();
+                MySqlCommand cmd = con.CreateCommand();
                 cmd.CommandText = @"project5_GetOrderDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
                     string selectedInvoice = HttpContext.Request.Form["orderList"];
-                    cmd.Parameters.Add("invoiceNumber", SqlDbType.VarChar);
+                    cmd.Parameters.Add("invoiceNumber", MySqlDbType.VarChar);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnOrder"].ToString();
                     // Execute the stored procedure
-                    SqlDataAdapter oda = new SqlDataAdapter(cmd);
+                    MySqlDataAdapter oda = new MySqlDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
 
@@ -137,10 +137,10 @@ namespace Package.Pages
         // Show capacity in the dropdown list
         public void OnPostUpdateQuantity(string lineNumberChange)
         {
-            using (SqlConnection con = new SqlConnection("Data Source=cssqlserver;Initial Catalog=cs306_villyani;Integrated Security=true;TrustServerCertificate=True;"))
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_avillyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
-                SqlCommand cmd = con.CreateCommand();
+                MySqlCommand cmd = con.CreateCommand();
                 cmd.CommandText = @"project5_UpdateOrderLine";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
@@ -149,10 +149,10 @@ namespace Package.Pages
                     int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
                     int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
 
-                    cmd.Parameters.Add("invoiceNumber", SqlDbType.Int);
+                    cmd.Parameters.Add("invoiceNumber", MySqlDbType.Int32);
                     cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
 
-                    cmd.Parameters.Add("lineNumber", SqlDbType.Int);
+                    cmd.Parameters.Add("lineNumber", MySqlDbType.Int32);
                     string lineNumber = HttpContext.Request.Form["lineNumber"];
                     string[] lineNumbers = lineNumber.Split(',');
                     for (int i = 0; i < lineNumbers.Length; i++)
@@ -162,12 +162,12 @@ namespace Package.Pages
                            cmd.Parameters["lineNumber"].Value = int.Parse(lineNum); 
                     }
 
-                    cmd.Parameters.Add("newQuantity", SqlDbType.Decimal);
+                    cmd.Parameters.Add("newQuantity", MySqlDbType.Decimal);
                     cmd.Parameters["newQuantity"].Value = decimal.Parse(HttpContext.Request.Form["quantityList"].ToString());
                     cmd.ExecuteNonQuery();
                     OnPostGetOrderDetails();
                 }
-                catch (SqlException ex)
+                catch (MySqlException ex)
                 {
                     ViewData["showCapacityList"] = ex.Message;
                 }
