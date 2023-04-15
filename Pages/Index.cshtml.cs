@@ -106,7 +106,7 @@ namespace Package.Pages
                         string managerInfo = reader.GetInt32(0).ToString() + ' ' + reader.GetString(1);
                         SelectListItem manager = new SelectListItem();
                         manager.Text = managerInfo;
-                        manager.Value = reader["employeeNumber"].ToString();
+                        manager.Value = reader["EmployeeNum"].ToString();
                         if (manager.Value == selectedValue)
                         {
                             manager.Selected = true;
