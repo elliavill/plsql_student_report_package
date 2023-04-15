@@ -59,28 +59,33 @@
         {
             var showData = ViewData["showAllEmployees"] as System.Data.DataTable;
             <div class="section-box">
-                <table>
-                    <tr>
-                        <th>Employee Number</th>
-                        <th>Employee Name</th>
-                        <th>Current Manager</th>
-                        <th>Changer Manager</th>
-                    </tr>
-                    @foreach (System.Data.DataRow row in showData.Rows)
-                    {
-                        <tr>
-                            <td>@row["employeeNumber"]</td>
-                            <td>@row["EmployeeFullName"]</td>
-                            <td>@row["CurrentManager"]</td>
-                            <td>
-                               @if (ViewData["showManagerDropdown"] != null)
-                               {
-                                  <h4>@Html.DropDownList("managerList", (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"])</h4>
-                               }
-                            </td>
-                        </tr>
-                    }
-                </table>
+               <table>
+                  <tr>
+                     <th>Employee Number</th>
+                     <th>Employee Name</th>
+                     <th>Current Manager</th>
+                     <th>Changer Manager</th>
+                  </tr>
+                  @foreach (System.Data.DataRow row in showData.Rows)
+                  {
+                     <tr>
+                        <td>@row["employeeNumber"]</td>
+                        <td>@row["EmployeeFullName"]</td>
+                        <td>@row["CurrentManager"]</td>
+                        <td>
+                           @if (ViewData["showManagerDropdown"] != null)
+                           {
+                              <select name="managerList">
+                                 @foreach (SelectListItem item in (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"])
+                                 {
+                                    <option value="@item.Value">@item.Text</option>
+                                 }
+                              </select>
+                           }
+                        </td>
+                     </tr>
+                  }
+               </table>
             </div>
         }
 </div>
