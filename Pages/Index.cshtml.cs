@@ -23,40 +23,33 @@ namespace Package.Pages
 
         public void OnGet()
         {
-            OnPostGetCustomersWithOrders(null);
+            OnPostGetManagerList();
         }
 
-        public void OnPostGetCustomersWithOrders(string selectedValue)
+        public void OnPostGetManagerList()
         {
-            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_avillyani;user id=CS306_Villyani;password=pcc138772")) 
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772")) 
             {
                 con.Open();
                 MySqlCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project5_GetCustomersWithOrders";
+                cmd.CommandText = @"project6_getManagerList";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    MySqlDataReader reader = cmd.ExecuteReader();
-                    List<SelectListItem> customerList = new List<SelectListItem>();
-                    while (reader.Read())
-                    {
-                        string customerInfo = reader.GetInt32(0).ToString() + " " +
-                                              reader.GetString(1) + " " +
-                                              reader.GetString(2);
-                        SelectListItem customer = new SelectListItem();
-                        customer.Text = customerInfo;
-                        customer.Value = reader["CUS_CODE"].ToString();
-                        if (customer.Value == selectedValue)
-                        {
-                            customer.Selected = true;
-                        }
-                        customerList.Add(customer);
-                    }
-                    ViewData["showCustomerList"] = customerList;
+                    cmd.Parameters.Add("ManagerName", MySqlDbType.VarChar);
+
+                    // Execute the stored procedure
+                    MySqlDataAdapter oda = new MySqlDataAdapter(cmd);
+                    DataSet ds = new DataSet(); 
+
+                    oda.Fill(ds);
+
+                    // Show the table of the list of manager
+                    ViewData["showManagerList"] = ds.Tables[0];
                 }
                 catch (MySqlException ex)
                 {
-                    ViewData["showCustomerList"] = ex.Message;
+                    ViewData["showManagerList"] = ex.Message;
                 }
                 finally
                 {
@@ -66,13 +59,13 @@ namespace Package.Pages
         }
 
       
-        public void OnPostGetOrdersForCustomer(string selectedOrder)
+        public void OnPostGetEmployeeList(string selectedOrder)
         {
-            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_avillyani;user id=CS306_Villyani;password=pcc138772"))
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
                 MySqlCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project5_GetOrdersForCustomer";
+                cmd.CommandText = @"project6_getEmployeeList";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
@@ -87,7 +80,7 @@ namespace Package.Pages
 
                     // Display all information
                     ViewData["showOrderForCustomer"] = ds.Tables[0];
-                    OnPostGetCustomersWithOrders(selectedCustomer);
+                    //OnPostGetManagerList(selectedCustomer);
                 }
                 catch (OracleException ex)
                 {
@@ -102,7 +95,7 @@ namespace Package.Pages
 
         public void OnPostGetOrderDetails()
         {
-            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_avillyani;user id=CS306_Villyani;password=pcc138772"))
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
                 MySqlCommand cmd = con.CreateCommand();
@@ -120,7 +113,7 @@ namespace Package.Pages
 
                     // Display all information
                     ViewData["showOrderDetails"] = ds.Tables[0];
-                    OnPostGetOrdersForCustomer(selectedInvoice);
+                   // OnPostGetOrdersForCustomer(selectedInvoice);
                 }
                 catch (OracleException ex)
                 {
@@ -137,7 +130,7 @@ namespace Package.Pages
         // Show capacity in the dropdown list
         public void OnPostUpdateQuantity(string lineNumberChange)
         {
-            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_avillyani;user id=CS306_Villyani;password=pcc138772"))
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
                 MySqlCommand cmd = con.CreateCommand();

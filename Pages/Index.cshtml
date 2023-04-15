@@ -17,34 +17,46 @@
     li {
         list-style-type: none;
     }
-    table td:first-child, table td:nth-child(4), table td:nth-child(5), table td:nth-child(6) {
+    @*table td:first-child, table td:nth-child(4), table td:nth-child(5), table td:nth-child(6) {
         width: 100px;
     }
     table td:nth-child(2), table td:nth-child(3) {
         width: 250px;
-    }
+    }*@
 </style>
 @using (Html.BeginForm())
 {
     <div class="">
-        <h1 class="display-4">Project 5: SqlServer ft. ASP.NET</h1>
+        <h1 class="display-4">Project 6: MySQL ft. ASP.NET</h1>
         <h4>Aurel Villyani</h4>
-        <br /><hr>
-        @if (ViewData["showCustomerList"] != null)
+        <br />
+        @if (ViewData["showManagerList"] != null)
         {
-            <h4>Select a Customer: </h4>
-            <h6 style="color: grey;">**This list only shows customers who have placed their orders</h6>
-            <h4>@Html.DropDownList("customerList", (IEnumerable<SelectListItem>)ViewData["showCustomerList"])</h4>
+            <h5>List of Manager: </h5>
+            @*<h4>@Html.DropDownList("managerList", (IEnumerable<SelectListItem>)ViewData["showManagerList"])</h4>*@
+           var showData = ViewData["showManagerList"] as System.Data.DataTable;
+           <div class="section-box">
+                <table>
+                    <tr>
+                        <th>Manager Name</th>
+                        <th>Number of Employees</th>
+                    </tr>
+                    @foreach (System.Data.DataRow row in showData.Rows)
+                    {
+                        <tr>
+                            <td>@row["ManagerName"]</td>
+                            <td>@row["EmployeeNum"]</td>
+                        </tr>
+                    }
+                </table>
+            </div>
         }
-        <button asp-page-handler="GetOrdersForCustomer">Get Customer Info</button>
-
         <br>
-        @if (ViewData["showOrderForCustomer"] != null)
+        @if (ViewData["showEmployeeList"] != null)
         {
             <hr>
-
             <h4>Select an order from the list: </h4>
-            var showData = ViewData["showOrderForCustomer"] as System.Data.DataTable;
+            var showData = ViewData["showEmployeeList"] as System.Data.DataTable;
             <div class="section-box">
                 <table>
                     <tr>
