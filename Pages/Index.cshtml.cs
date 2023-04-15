@@ -24,11 +24,12 @@ namespace Package.Pages
         public void OnGet()
         {
             OnPostGetManagerList();
+            OnPostShowManagerDropdown(null);
         }
 
         public void OnPostGetManagerList()
         {
-            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772")) 
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
                 MySqlCommand cmd = con.CreateCommand();
@@ -36,11 +37,9 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    cmd.Parameters.Add("ManagerName", MySqlDbType.VarChar);
-
                     // Execute the stored procedure
                     MySqlDataAdapter oda = new MySqlDataAdapter(cmd);
-                    DataSet ds = new DataSet(); 
+                    DataSet ds = new DataSet();
 
                     oda.Fill(ds);
 
@@ -58,7 +57,7 @@ namespace Package.Pages
             }
         }
 
-      
+
         public void OnPostGetEmployeeList(string selectedOrder)
         {
             using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
@@ -93,76 +92,35 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostGetOrderDetails()
+        public void OnPostShowManagerDropdown(string selectedValue)
         {
             using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
                 MySqlCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project5_GetOrderDetails";
+                cmd.CommandText = @"project6_getManagerList";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedInvoice = HttpContext.Request.Form["orderList"];
-                    cmd.Parameters.Add("invoiceNumber", MySqlDbType.VarChar);
-                    cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnOrder"].ToString();
-                    // Execute the stored procedure
-                    MySqlDataAdapter oda = new MySqlDataAdapter(cmd);
-                    DataSet ds = new DataSet();
-                    oda.Fill(ds);
-
-                    // Display all information
-                    ViewData["showOrderDetails"] = ds.Tables[0];
-                   // OnPostGetOrdersForCustomer(selectedInvoice);
-                }
-                catch (OracleException ex)
-                {
-                    ViewData["showOrderDetails"] = ex.Message;
-                }
-                finally
-                {
-                    con.Close();
-                }
-            }
-        }
-
-
-        // Show capacity in the dropdown list
-        public void OnPostUpdateQuantity(string lineNumberChange)
-        {
-            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
-            {
-                con.Open();
-                MySqlCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project5_UpdateOrderLine";
-                cmd.CommandType = CommandType.StoredProcedure;
-                try
-                {
-                    decimal selectedCapacity = decimal.Parse(HttpContext.Request.Form["quantityList"]);
-                    int selectedCustomer = Convert.ToInt32(HttpContext.Request.Form["customerList"]);
-                    int selectedInvoice = Convert.ToInt32(HttpContext.Request.Form["btnOrder"]);
-
-                    cmd.Parameters.Add("invoiceNumber", MySqlDbType.Int32);
-                    cmd.Parameters["invoiceNumber"].Value = HttpContext.Request.Form["btnQuantity"].ToString();
-
-                    cmd.Parameters.Add("lineNumber", MySqlDbType.Int32);
-                    string lineNumber = HttpContext.Request.Form["lineNumber"];
-                    string[] lineNumbers = lineNumber.Split(',');
-                    for (int i = 0; i < lineNumbers.Length; i++)
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    List<SelectListItem> managerList = new List<SelectListItem>();
+                    while (reader.Read())
                     {
-                        string lineNum = lineNumbers[i];
-                        if(lineNum == lineNumberChange)
-                           cmd.Parameters["lineNumber"].Value = int.Parse(lineNum); 
+                        string managerInfo = reader.GetInt32(0).ToString() + ' ' + reader.GetString(1);
+                        SelectListItem manager = new SelectListItem();
+                        manager.Text = managerInfo;
+                        manager.Value = reader["employeeNumber"].ToString();
+                        if (manager.Value == selectedValue)
+                        {
+                            manager.Selected = true;
+                        }
+                        managerList.Add(manager);
                     }
-
-                    cmd.Parameters.Add("newQuantity", MySqlDbType.Decimal);
-                    cmd.Parameters["newQuantity"].Value = decimal.Parse(HttpContext.Request.Form["quantityList"].ToString());
-                    cmd.ExecuteNonQuery();
-                    OnPostGetOrderDetails();
+                    ViewData["showManagerDropdown"] = managerList;
                 }
                 catch (MySqlException ex)
                 {
-                    ViewData["showCapacityList"] = ex.Message;
+                    ViewData["showManagerDropdown"] = ex.Message;
                 }
                 finally
                 {
@@ -170,6 +128,5 @@ namespace Package.Pages
                 }
             }
         }
-
     }
 }
