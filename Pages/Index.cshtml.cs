@@ -24,6 +24,7 @@ namespace Package.Pages
         public void OnGet()
         {
             OnPostGetManagerList();
+         OnPostGetEmployeeList();
             OnPostShowManagerDropdown(null);
         }
 
@@ -58,32 +59,28 @@ namespace Package.Pages
         }
 
 
-        public void OnPostGetEmployeeList(string selectedOrder)
+        public void OnPostGetEmployeeList()
         {
             using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
                 MySqlCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project6_getEmployeeList";
+                cmd.CommandText = @"project6_getAllEmployeeList";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string selectedCustomer = HttpContext.Request.Form["customerList"];
-                    cmd.Parameters.Add("customerCode", MySqlDbType.VarChar);
-                    cmd.Parameters["customerCode"].Value = selectedCustomer;
-
                     // Execute the stored procedure
                     MySqlDataAdapter oda = new MySqlDataAdapter(cmd);
                     DataSet ds = new DataSet();
                     oda.Fill(ds);
 
                     // Display all information
-                    ViewData["showOrderForCustomer"] = ds.Tables[0];
+                    ViewData["showAllEmployees"] = ds.Tables[0];
                     //OnPostGetManagerList(selectedCustomer);
                 }
                 catch (OracleException ex)
                 {
-                    ViewData["showOrderForCustomer"] = ex.Message;
+                    ViewData["showAllEmployees"] = ex.Message;
                 }
                 finally
                 {

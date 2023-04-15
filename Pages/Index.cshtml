@@ -54,40 +54,34 @@
             </div>
         }
         <br>
-        @if (ViewData["showManagerDropdown"] != null)
+
+        @if (ViewData["showAllEmployees"] != null)
         {
-            <h4>@Html.DropDownList("managerList", (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"])</h4>
-        }
-        @if (ViewData["showEmployeeList"] != null)
-        {
-            <hr>
-            <h4>Select an order from the list: </h4>
-            var showData = ViewData["showEmployeeList"] as System.Data.DataTable;
+            var showData = ViewData["showAllEmployees"] as System.Data.DataTable;
             <div class="section-box">
                 <table>
                     <tr>
                         <th>Employee Number</th>
                         <th>Employee Name</th>
-                        <th>Invoice Date</th>
-                        <th>Total Item Ordered</th>
-                        <th>Customer Code</th>
-                        <th></th>
+                        <th>Current Manager</th>
+                        <th>Changer Manager</th>
                     </tr>
                     @foreach (System.Data.DataRow row in showData.Rows)
                     {
                         <tr>
-                            <td>@row["CustomerName"]</td>
-                            <td>@row["InvoiceNumber"]</td>
-                            <td>@row["InvoiceDate"]</td>
-                            <td>@row["TotalItemOrdered"]</td>
-                            <td>@row["CUS_CODE"]</td>
-                            <td><button name="btnOrder" asp-page-handler="GetOrderDetails" value="@row["inv_number"]">Details</button></td>
+                            <td>@row["employeeNumber"]</td>
+                            <td>@row["EmployeeFullName"]</td>
+                            <td>@*@row["CurrentManager"]*@</td>
+                            <td>
+                               @if (ViewData["showManagerDropdown"] != null)
+                               {
+                                  <h4>@Html.DropDownList("managerList", (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"])</h4>
+                               }
+                            </td>
                         </tr>
                     }
                 </table>
             </div>
         }
-
-   
 </div>
 }
