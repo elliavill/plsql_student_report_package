@@ -26,61 +26,61 @@
 </style>
 @using (Html.BeginForm())
 {
-    <div class="">
-        <h1 class="display-4">Project 6: MySQL ft. ASP.NET</h1>
-        <h4>Aurel Villyani</h4>
-        <br />
-        @if (ViewData["showManagerList"] != null)
-        {
-            <h5>List of Manager: </h5>
-            @*<h4>@Html.DropDownList("managerList", (IEnumerable<SelectListItem>)ViewData["showManagerList"])</h4>*@
-           var showData = ViewData["showManagerList"] as System.Data.DataTable;
-           <div class="section-box">
-                <table>
-                    <tr>
-                        <th>Employee Number</th>
-                        <th>Manager Name</th>
-                        <th>Number of Employees</th>
-                    </tr>
-                    @foreach (System.Data.DataRow row in showData.Rows)
-                    {
-                        <tr>
-                            <td>@row["employeeNumber"]</td>
-                            <td>@row["ManagerName"]</td>
-                            <td>@row["EmployeeNum"]</td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        }
-        <br>
+<div class="">
+   <h1 class="display-4">Project 6: MySQL ft. ASP.NET</h1>
+   <h4>Aurel Villyani</h4>
+   <br />
+   @if (ViewData["showManagerList"] != null)
+   {
+      <h4>List of Manager: </h4>
+      var showData = ViewData["showManagerList"] as System.Data.DataTable;
+      <div class="section-box">
+         <table>
+            <tr>
+               <th>Employee Number</th>
+               <th>Manager Name</th>
+               <th>Number of Employees</th>
+            </tr>
+            @foreach (System.Data.DataRow row in showData.Rows)
+            {
+               <tr>
+                  <td>@row["employeeNumber"]</td>
+                  <td>@row["ManagerName"]</td>
+                  <td>@row["EmployeeNum"]</td>
+               </tr>
+            }
+         </table>
+      </div>
+   }
+   <br>
 
-        @if (ViewData["showAllEmployees"] != null)
-        {
-            var showData = ViewData["showAllEmployees"] as System.Data.DataTable;
-            <div class="section-box">
-               <table>
-                  <tr>
-                     <th>Employee Number</th>
-                     <th>Employee Name</th>
-                     <th>Current Manager</th>
-                     <th>Current Manager</th>
-                  </tr>
-                  @foreach (System.Data.DataRow row in showData.Rows)
-                  {
-                     <tr>
-                        <td>@row["employeeNumber"]</td>
-                        <td>@row["EmployeeFullName"]</td>
-                        <td>@row["CurrentManager"]</td>
-                        <td>
-                           <select name="managerList">
-                              <option value="@row["DirectReports"]" selected>@row["CurrentManager"]</option>
-                           </select>
-                        </td>
-                     </tr>
-                  }
-               </table>
-            </div>
-        }
-   </div>
+   @if (ViewData["showAllEmployees"] != null)
+   {
+      var showData = ViewData["showAllEmployees"] as System.Data.DataTable;
+      <h4>List of All Employees: </h4>
+      <div class="section-box">
+         <table>
+            <tr>
+               <th>Employee Number</th>
+               <th>Employee Name</th>
+               <th>Current Manager</th>
+               <th></th>
+            </tr>
+            @foreach (System.Data.DataRow row in showData.Rows)
+            {
+               <tr>
+                  <td>@row["employeeNumber"]</td>
+                  <td>@row["EmployeeFullName"]</td>
+                  <td>
+                     @Html.DropDownList("managerList", (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"], @row["CurrentManager"].ToString(), new { @value = @row["ManagerNumber"] })
+                  </td>
+                  <td>
+                     <button name="btnChangeManager" asp-page-handler="ChangeManager" asp-route-employeeNumber="@row["employeeNumber"]" value="@row["ManagerNumber"]">Update</button>
+                  </td>
+               </tr>
+            }
+         </table>
+      </div>
+   }
+</div>
 }

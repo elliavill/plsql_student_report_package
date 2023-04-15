@@ -24,8 +24,8 @@ namespace Package.Pages
         public void OnGet()
         {
             OnPostGetManagerList();
-         OnPostGetEmployeeList();
-            OnPostShowManagerDropdown(null);
+            OnPostGetEmployeeList();
+            OnPostShowManagerDropdown();
         }
 
         public void OnPostGetManagerList()
@@ -89,28 +89,24 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostShowManagerDropdown(string selectedValue)
+        public void OnPostShowManagerDropdown()
         {
             using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
                 MySqlCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"project6_getManagerList";
+                cmd.CommandText = @"project6_getAllEmployeeList";
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
+                    //string selectedManager = HttpContext.Request.Form["managerList"];
                     MySqlDataReader reader = cmd.ExecuteReader();
                     List<SelectListItem> managerList = new List<SelectListItem>();
                     while (reader.Read())
                     {
-                        string managerInfo = reader.GetInt32(0).ToString() + ' ' + reader.GetString(1);
                         SelectListItem manager = new SelectListItem();
-                        manager.Text = managerInfo;
-                        manager.Value = reader["EmployeeNum"].ToString();
-                        if (manager.Value == selectedValue)
-                        {
-                            manager.Selected = true;
-                        }
+                        manager.Text = reader.GetString(1); // Show the current manager full name
+                        manager.Value = reader["CurrentManager"].ToString(); // Get the value of current manager
                         managerList.Add(manager);
                     }
                     ViewData["showManagerDropdown"] = managerList;
@@ -125,5 +121,37 @@ namespace Package.Pages
                 }
             }
         }
+
+        public void OnPostChangeManager(string employeeNumber)
+        {
+         using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
+         {
+            con.Open();
+            MySqlCommand cmd = con.CreateCommand();
+            cmd.CommandText = @"project6_updateNewManager";
+            cmd.CommandType = CommandType.StoredProcedure;
+            try
+            {
+               cmd.Parameters.Add("newReportsTo", MySqlDbType.Int32);
+               cmd.Parameters["newReportsTo"].Value = HttpContext.Request.Form["btnChangeManager"].ToString();
+
+               cmd.Parameters.Add("empNum", MySqlDbType.Int32);
+               cmd.Parameters["empNum"].Value = int.Parse(employeeNumber);
+
+               cmd.ExecuteNonQuery();
+               OnPostGetManagerList();
+               OnPostGetEmployeeList();
+               OnPostShowManagerDropdown();
+            }
+            catch (MySqlException ex)
+            {
+               ViewData["showUpdatedManager"] = ex.Message;
+            }
+            finally
+            {
+               con.Close();
+            }
+         }
+      }
     }
 }
