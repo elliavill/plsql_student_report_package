@@ -124,7 +124,7 @@ namespace Package.Pages
 
         public void OnPostChangeManager(string employeeNumber)
         {
-            string newManagerId = HttpContext.Request.Form["managerList"];
+            string newManagerId = HttpContext.Request.Form["newManagerId"];
             using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();

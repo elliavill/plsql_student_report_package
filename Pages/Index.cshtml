@@ -78,7 +78,7 @@
                      <td>@row["EmployeeFullName"]</td>
                      <td>@row["CurrentManager"]</td>
                      <td>
-                        <select name="managerList">
+                        <select name="newManagerId">
                            @foreach (var manager in (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"])
                            {
                               <option value="@manager.Value" selected="@manager.Value.Equals(row["ManagerNumber"].ToString())">@manager.Text</option>
@@ -86,7 +86,10 @@
                         </select>
                      </td>
                      <td>
-                        <button type="submit" name="btnChangeManager" value="@row["employeeNumber"]">Update</button>
+                        <button type="submit" name="btnChangeManager"
+                                asp-route-employeeNumber="@row["employeeNumber"]" 
+                                asp-route-managerNumber="@row["ManagerNumber"]"
+                                value="@row["employeeNumber"]">Update</button>
                      </td>
                   </tr>
                }
