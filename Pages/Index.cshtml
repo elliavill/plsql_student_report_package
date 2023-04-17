@@ -75,7 +75,7 @@
                   </td>
                   <td>@row["EmployeeFullName"]</td>
                   <td>
-                     @Html.DropDownList("managerList_" + row["employeeNumber"], 
+                     @Html.DropDownList("managerList_" + row["ManagerNumber"], 
                                         (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"], 
                                         @row["CurrentManager"].ToString(), 
                                         new { @value = @row["ManagerNumber"] })
