@@ -69,13 +69,23 @@
             @foreach (System.Data.DataRow row in showData.Rows)
             {
                <tr>
-                  <td>@row["employeeNumber"]</td>
+                  <td>
+                     @row["employeeNumber"]
+                     <input type="hidden" name="employeeNumber" value="@row["employeeNumber"]"/>
+                  </td>
                   <td>@row["EmployeeFullName"]</td>
                   <td>
-                     @Html.DropDownList("managerList", (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"], @row["CurrentManager"].ToString(), new { @value = @row["ManagerNumber"] })
+                     @Html.DropDownList("managerList", 
+                                        (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"], 
+                                        @row["CurrentManager"].ToString(), 
+                                        new { @value = @row["ManagerNumber"] })
                   </td>
                   <td>
-                     <button name="btnChangeManager" asp-page-handler="ChangeManager" asp-route-employeeNumber="@row["employeeNumber"]" value="@row["ManagerNumber"]">Update</button>
+                     <button name="btnChangeManager" 
+                             asp-page-handler="ChangeManager" 
+                             asp-route-employeeNumber="@row["employeeNumber"]" 
+                             asp-route-managerNumber="@row["ManagerNumber"]" 
+                             value="@row["ManagerNumber"]">Update</button>
                   </td>
                </tr>
             }
