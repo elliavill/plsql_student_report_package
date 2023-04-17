@@ -122,8 +122,9 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostChangeManager(string employeeNumber, string managerNumber)
+        public void OnPostChangeManager(string employeeNumber)
         {
+            string newManagerId = HttpContext.Request.Form["managerList"];
             using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
@@ -132,10 +133,6 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    string newManagerId = HttpContext.Request.Form["managerList"];
-                    /*cmd.Parameters.Add("@newReportsTo", MySqlDbType.Int32).Value = int.Parse(HttpContext.Request.Form["btnChangeManager"].ToString());
-                    cmd.Parameters.Add("@empNum", MySqlDbType.Int32).Value = int.Parse(employeeNumber);*/
-                    
                     cmd.Parameters.AddWithValue("@empNum", employeeNumber);
                     cmd.Parameters.AddWithValue("@newReportsTo", newManagerId);
                     cmd.ExecuteNonQuery();
