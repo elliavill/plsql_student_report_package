@@ -105,7 +105,7 @@ namespace Package.Pages
                     while (reader.Read())
                     {
                         SelectListItem manager = new SelectListItem();
-                        manager.Text = reader.GetString(1); // Show the current manager full name
+                        manager.Text = reader.GetInt32(0).ToString() + ' ' + reader.GetString(1); // Show the current manager full name
                         manager.Value = reader["CurrentManager"].ToString(); // Get the value of current manager
                         managerList.Add(manager);
                     }
@@ -124,31 +124,31 @@ namespace Package.Pages
 
         public void OnPostChangeManager(string employeeNumber, string managerNumber)
         {
-         using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
-         {
-            con.Open();
-            MySqlCommand cmd = con.CreateCommand();
-            cmd.CommandText = @"project6_updateNewManager";
-            cmd.CommandType = CommandType.StoredProcedure;
-            try
+            using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
-               cmd.Parameters.Add("@newReportsTo", MySqlDbType.Int32).Value = int.Parse(HttpContext.Request.Form["btnChangeManager"].ToString());
-               cmd.Parameters.Add("@empNum", MySqlDbType.Int32).Value = int.Parse(employeeNumber);
-
-               cmd.ExecuteNonQuery();
-               OnPostGetManagerList();
-               OnPostGetEmployeeList();
-               OnPostShowManagerDropdown();
+                con.Open();
+                MySqlCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"project6_updateNewManager";
+                cmd.CommandType = CommandType.StoredProcedure;
+                try
+                {
+                    cmd.Parameters.Add("@newReportsTo", MySqlDbType.Int32).Value = int.Parse(HttpContext.Request.Form["btnChangeManager"].ToString());
+                    cmd.Parameters.Add("@empNum", MySqlDbType.Int32).Value = int.Parse(employeeNumber);
+                    
+                    cmd.ExecuteNonQuery();
+                    OnPostGetManagerList();
+                    OnPostGetEmployeeList();
+                    OnPostShowManagerDropdown();
+                }
+                catch (MySqlException ex)
+                {
+                    ViewData["showUpdatedManager"] = ex.Message;
+                }
+                finally
+                {
+                    con.Close();
+                }
             }
-            catch (MySqlException ex)
-            {
-               ViewData["showUpdatedManager"] = ex.Message;
-            }
-            finally
-            {
-               con.Close();
-            }
-         }
-      }
+        }
     }
 }

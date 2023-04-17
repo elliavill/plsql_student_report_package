@@ -75,7 +75,7 @@
                   </td>
                   <td>@row["EmployeeFullName"]</td>
                   <td>
-                     @Html.DropDownList("managerList", 
+                     @Html.DropDownList("managerList_" + row["employeeNumber"], 
                                         (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"], 
                                         @row["CurrentManager"].ToString(), 
                                         new { @value = @row["ManagerNumber"] })
@@ -85,7 +85,7 @@
                              asp-page-handler="ChangeManager" 
                              asp-route-employeeNumber="@row["employeeNumber"]" 
                              asp-route-managerNumber="@row["ManagerNumber"]" 
-                             value="@row["ManagerNumber"]">Update</button>
+                             value="@row["employeeNumber"]">Update</button>
                   </td>
                </tr>
             }
