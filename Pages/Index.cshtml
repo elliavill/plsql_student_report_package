@@ -75,10 +75,10 @@
                   </td>
                   <td>@row["EmployeeFullName"]</td>
                   <td>
-                     @Html.DropDownList("managerList_" + row["employeeNumber"], 
-                                        (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"], 
-                                        @row["CurrentManager"].ToString(), 
-                                        new { @value = @row["ManagerNumber"] })
+                     @Html.DropDownList("managerList_" + row["employeeNumber"],
+                                        (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"],
+                                        @row["CurrentManager"].ToString(),
+                                        new { @value = @row["employeeNumber"], id = "managerList_" + row["employeeNumber"] })
                   </td>
                   <td>
                      <button name="btnChangeManager" 

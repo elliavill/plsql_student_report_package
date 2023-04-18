@@ -106,7 +106,7 @@ namespace Package.Pages
                     {
                         SelectListItem manager = new SelectListItem();
                         manager.Text = reader.GetInt32(0).ToString() + ' ' + reader.GetString(1); // Show the current manager full name
-                        manager.Value = reader["CurrentManager"].ToString(); // Get the value of current manager
+                        manager.Value = reader["employeeNumber"].ToString(); // Get the value of current manager
                         managerList.Add(manager);
                     }
                     ViewData["showManagerDropdown"] = managerList;
@@ -124,7 +124,7 @@ namespace Package.Pages
 
         public void OnPostChangeManager(string employeeNumber)
         {
-            string newManagerId = HttpContext.Request.Form["newManagerId"];
+            string newManagerId = HttpContext.Request.Form["managerList_" + employeeNumber];
             using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
