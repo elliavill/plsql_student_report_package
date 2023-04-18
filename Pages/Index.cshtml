@@ -59,42 +59,37 @@
       var showData = ViewData["showAllEmployees"] as System.Data.DataTable;
       <h4>List of All Employees: </h4>
       <div class="section-box">
-         <form method="post">
-            <table>
+         <table>
+            <tr>
+               <th>Employee Number</th>
+               <th>Employee Name</th>
+               <th>Current Manager</th>
+               <th></th>
+            </tr>
+            @foreach (System.Data.DataRow row in showData.Rows)
+            {
                <tr>
-                  <th>Employee Number</th>
-                  <th>Employee Name</th>
-                  <th>Current Manager</th>
-                  <th>New Manager</th>
-                  <th></th>
+                  <td>
+                     @row["employeeNumber"]
+                     <input type="hidden" name="employeeNumber" value="@row["employeeNumber"]"/>
+                  </td>
+                  <td>@row["EmployeeFullName"]</td>
+                  <td>
+                     @Html.DropDownList("managerList_" + row["employeeNumber"], 
+                                        (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"], 
+                                        @row["CurrentManager"].ToString(), 
+                                        new { @value = @row["ManagerNumber"] })
+                  </td>
+                  <td>
+                     <button name="btnChangeManager" 
+                             asp-page-handler="ChangeManager" 
+                             asp-route-employeeNumber="@row["employeeNumber"]" 
+                             asp-route-managerNumber="@row["ManagerNumber"]" 
+                             value="@row["employeeNumber"]">Update</button>
+                  </td>
                </tr>
-               @foreach (System.Data.DataRow row in showData.Rows)
-               {
-                  <tr>
-                     <td>
-                        @row["employeeNumber"]
-                        <input type="hidden" name="employeeNumber" value="@row["employeeNumber"]" />
-                     </td>
-                     <td>@row["EmployeeFullName"]</td>
-                     <td>@row["CurrentManager"]</td>
-                     <td>
-                        <select name="newManagerId">
-                           @foreach (var manager in (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"])
-                           {
-                              <option value="@manager.Value" selected="@manager.Value.Equals(row["ManagerNumber"].ToString())">@manager.Text</option>
-                           }
-                        </select>
-                     </td>
-                     <td>
-                        <button type="submit" name="btnChangeManager"
-                                asp-route-employeeNumber="@row["employeeNumber"]" 
-                                asp-route-managerNumber="@row["ManagerNumber"]"
-                                value="@row["employeeNumber"]">Update</button>
-                     </td>
-                  </tr>
-               }
-            </table>
-         </form>
+            }
+         </table>
       </div>
    }
 </div>

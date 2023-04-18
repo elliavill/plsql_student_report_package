@@ -106,7 +106,7 @@ namespace Package.Pages
                     {
                         SelectListItem manager = new SelectListItem();
                         manager.Text = reader.GetInt32(0).ToString() + ' ' + reader.GetString(1); // Show the current manager full name
-                        manager.Value = reader["employeeNumber"].ToString(); // Get the value of current manager
+                        manager.Value = reader["CurrentManager"].ToString(); // Get the value of current manager
                         managerList.Add(manager);
                     }
                     ViewData["showManagerDropdown"] = managerList;
@@ -133,8 +133,9 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    cmd.Parameters.AddWithValue("@empNum", employeeNumber);
-                    cmd.Parameters.AddWithValue("@newReportsTo", newManagerId);
+                    cmd.Parameters.Add("@newReportsTo", MySqlDbType.Int32).Value = int.Parse(HttpContext.Request.Form["btnChangeManager"].ToString());
+                    cmd.Parameters.Add("@empNum", MySqlDbType.Int32).Value = int.Parse(employeeNumber);
+                    
                     cmd.ExecuteNonQuery();
                     OnPostGetManagerList();
                     OnPostGetEmployeeList();
