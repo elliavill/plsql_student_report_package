@@ -26,6 +26,10 @@
 </style>
 @using (Html.BeginForm())
 {
+   @if (ViewData["errorMessage"] != null)
+   {
+      <div class="alert alert-danger">@ViewData["errorMessage"]</div>
+   }
    <div class="">
       <h1 class="display-4">Project 6: MySQL ft. ASP.NET</h1>
       <h4>Aurel Villyani</h4>
@@ -78,7 +82,8 @@
                         @Html.DropDownList("managerList_" + row["employeeNumber"],
                                            (IEnumerable<SelectListItem>)ViewData["showManagerDropdown"],
                                            @row["CurrentManager"].ToString(),
-                                           new { @value = @row["employeeNumber"], id = "managerList_" + row["employeeNumber"]})
+                                           new { @value = @row["employeeNumber"], id = "managerList_" + row["employeeNumber"] })
+                        <input type="text" name="errorFlag" hidden />
                      </td>
                      <td>
                         <button name="btnChangeManager" asp-page-handler="ChangeManager"
