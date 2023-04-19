@@ -105,7 +105,7 @@ namespace Package.Pages
                     while (reader.Read())
                     {
                         SelectListItem manager = new SelectListItem();
-                        manager.Text = reader.GetInt32(0).ToString() + ' ' + reader.GetString(1); // Show the current manager full name
+                        manager.Text = reader.GetString(1); // Show the current manager full name
                         manager.Value = reader["employeeNumber"].ToString(); // Get the value of current manager
                         managerList.Add(manager);
                     }
@@ -122,9 +122,11 @@ namespace Package.Pages
             }
         }
 
-        public void OnPostChangeManager(string employeeNumber)
+        public void OnPostChangeManager()
         {
+            string employeeNumber = HttpContext.Request.Form["btnChangeManager"].ToString();
             string newManagerId = HttpContext.Request.Form["managerList_" + employeeNumber];
+
             using (MySqlConnection con = new MySqlConnection("Server=csmysql;database=cs306_villyani;user id=CS306_Villyani;password=pcc138772"))
             {
                 con.Open();
@@ -133,7 +135,7 @@ namespace Package.Pages
                 cmd.CommandType = CommandType.StoredProcedure;
                 try
                 {
-                    cmd.Parameters.Add("@newReportsTo", MySqlDbType.Int32).Value = int.Parse(HttpContext.Request.Form["btnChangeManager"].ToString());
+                    cmd.Parameters.Add("@newReportsTo", MySqlDbType.Int32).Value = int.Parse(newManagerId);
                     cmd.Parameters.Add("@empNum", MySqlDbType.Int32).Value = int.Parse(employeeNumber);
                     
                     cmd.ExecuteNonQuery();
